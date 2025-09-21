@@ -9,6 +9,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.UUID;
 
 /*
 full_name VARCHAR(100) NOT NULL,
@@ -49,4 +50,5 @@ public class CustomerRepositoryTest {
         List<Customer> customers = repository.findAll();
         customers.forEach(System.out::println);
     }
+
 }

@@ -77,4 +77,18 @@ public class CustomerRepositoryMockTest {
         assertEquals("CH123456", result.get().getDocNumber());
     }
 
+    @Test
+    public void findByEmailAndDocNumberTest() {
+        Customer c = new Customer();
+        c.setEmail("john.doe@gmail.com");
+
+        when(repository.findByEmailAndDocNumber("john.doe@gmail.com", "FA679820")).thenReturn(Optional.of(c));
+
+        Optional<Customer> result = repository.findByEmailAndDocNumber("john.doe@gmail.com", "FA679820");
+        assertTrue(result.isPresent());
+        assertEquals("john.doe@gmail.com", result.get().getEmail());
+        assertEquals("FA679820", result.get().getDocNumber());
+
+    }
+
 }

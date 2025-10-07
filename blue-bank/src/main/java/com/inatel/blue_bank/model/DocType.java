@@ -1,4 +1,4 @@
-package com.inatel.blue_bank.models;
+package com.inatel.blue_bank.model;
 
 public enum DocType {
     PASSPORT,

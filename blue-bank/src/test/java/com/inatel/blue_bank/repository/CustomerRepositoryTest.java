@@ -1,7 +1,7 @@
 package com.inatel.blue_bank.repository;
 
-import com.inatel.blue_bank.models.Customer;
-import com.inatel.blue_bank.models.DocType;
+import com.inatel.blue_bank.model.Customer;
+import com.inatel.blue_bank.model.DocType;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -9,7 +9,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.UUID;
 
 /*
 full_name VARCHAR(100) NOT NULL,

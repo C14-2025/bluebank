@@ -1,4 +1,4 @@
-package com.inatel.blue_bank.repository;
+package com.inatel.blue_bank.service;
 
 import com.inatel.blue_bank.model.Customer;
 import org.springframework.data.jpa.repository.JpaRepository;

@@ -49,8 +49,8 @@ public class Customer {
     @Column(length = 100, nullable = false)
     private String occupation;
 
-//    @OneToOne(mappedBy = "customer")
-//    private Account account;
+    @OneToOne(mappedBy = "customer")
+    private Account account;
 
     @LastModifiedDate
     @Column(name = "updated_at", nullable = false)

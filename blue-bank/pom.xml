@@ -8,10 +8,10 @@
 		<version>3.5.0</version>
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
-	<groupId>com.sbcourse</groupId>
-	<artifactId>libraryapi</artifactId>
+	<groupId>com.inatel</groupId>
+	<artifactId>bluebank</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<name>libraryapi</name>
+	<name>blue-bank</name>
 	<description>Demo project for Spring Boot</description>
 	<url/>
 	<licenses>

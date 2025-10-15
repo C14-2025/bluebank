@@ -7,6 +7,7 @@ import lombok.ToString;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.LocalDate;
+import java.util.List;
 import java.util.UUID;
 
 @Entity
@@ -34,4 +35,6 @@ public class Card {
     @JoinColumn(name = "account_id", referencedColumnName = "id")
     private Account account;
 
+    @OneToMany(mappedBy = "card")
+    private List<CardBill> cardBills;
 }

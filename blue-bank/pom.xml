@@ -11,7 +11,7 @@
 	<groupId>com.inatel</groupId>
 	<artifactId>bluebank</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<name>blue-bank</name>
+	<name>bluebank</name>
 	<description>Demo project for Spring Boot</description>
 	<url/>
 	<licenses>

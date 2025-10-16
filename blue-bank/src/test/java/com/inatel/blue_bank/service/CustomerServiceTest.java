@@ -14,8 +14,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -177,6 +176,24 @@ public class CustomerServiceTest {
         assertEquals("Software Engineer", result.get(2).getOccupation());
 
         verify(repository, times(1)).findAll(any(Example.class));
+    }
+
+    @Test
+    public void updateNoIdExceptionTest() {
+        Customer c = new Customer(); // Customer with no id
+
+        assertThrows(IllegalArgumentException.class, () -> service.update(c));
+
+        verifyNoInteractions(repository);
+    }
+
+    @Test
+    void deleteTest() {
+        Customer c = new Customer();
+
+        service.delete(c);
+
+        verify(repository, times(1)).delete(c);
     }
 }
 

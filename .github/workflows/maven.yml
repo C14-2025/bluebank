@@ -30,7 +30,7 @@ jobs:
         cache: maven
     - name: Build with Maven
       run: |
-        cd bluebank
+        cd blue-bank
         mvn clean install -DskipTests
 
   code_quality:

@@ -47,7 +47,7 @@ jobs:
         uses: SonarSource/sonarcloud-github-action@v2
         with:
           args: >
-            -Dsonar.projectKey=marcelo-filho_bluebank
+            -Dsonar.projectKey=marcelo-filho_blue-bank
             -Dsonar.organization=marcelo-filho-org
             -Dsonar.java.binaries=target/
         env:

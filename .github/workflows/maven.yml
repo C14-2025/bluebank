@@ -107,9 +107,12 @@ jobs:
           distribution: 'temurin'
 
       - name: Instalar dependências
+        working-directory: blue-bank 
         run: mvn install -DskipTests
 
       - name: Verificar formatação do código
+        working-directory: blue-bank  
         run: mvn spotless:check
+
 
       

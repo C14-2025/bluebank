@@ -52,7 +52,10 @@ jobs:
       with:
         name: blue-bank-jar
         path: target/*.jar
-  
+    - name: Package and upload
+      run: 
+        cd blue-bank
+        
   # code_quality:
   #   runs-on: ubuntu-latest
   #   needs: package_and_upload

@@ -94,3 +94,22 @@ jobs:
         with:
           name: security-report
           path: dependency-check-report.html
+  format:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout do código
+        uses: actions/checkout@v4
+
+      - name: Configurar JDK 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+
+      - name: Instalar dependências
+        run: mvn install -DskipTests
+
+      - name: Verificar formatação do código
+        run: mvn spotless:check
+
+      

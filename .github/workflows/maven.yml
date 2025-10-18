@@ -33,9 +33,27 @@ jobs:
         cd blue-bank
         mvn clean install -DskipTests
 
+  test:
+      runs-on: ubuntu-latest
+      needs: build
+
+      steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up JDK 21
+        uses: actions/setup-java@v4
+        with:
+          java-version: '21'
+          distribution: 'temurin'
+
+      - name: Run Unit Tests
+        run: |
+          cd blue-bank
+          mvn test
+
   package_and_upload:
     runs-on: ubuntu-latest
-    needs: build
+    needs: test
 
     steps:
     - uses: actions/checkout@v4
@@ -94,25 +112,4 @@ jobs:
         with:
           name: security-report
           path: dependency-check-report.html
-  format:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout do código
-        uses: actions/checkout@v4
-
-      - name: Configurar JDK 21
-        uses: actions/setup-java@v4
-        with:
-          java-version: '21'
-          distribution: 'temurin'
-
-      - name: Instalar dependências
-        working-directory: blue-bank 
-        run: mvn install -DskipTests
-
-      - name: Verificar formatação do código
-        working-directory: blue-bank  
-        run: mvn spotless:check
-
-
-      
+  

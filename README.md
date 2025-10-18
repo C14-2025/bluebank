@@ -8,7 +8,7 @@ This project focuses on applying modern Java backend development  and software e
 
 ## Authors
 
-- [@MiguelViannaStreva](https://www.github.com/migstreva)
-- [@MarceloFroesPadilhaFilho](https://www.github.com/mfp1401)
-- [@DouglasAlmeidaOtani](https://www.github.com/DouglasOtani)
 - [@BrunoFerreiraFernandesRibeiro](https://www.github.com/Bruno-Fernands)
+- [@DouglasAlmeidaOtani](https://www.github.com/DouglasOtani)
+- [@MarceloFroesPadilhaFilho](https://www.github.com/mfp1401)
+- [@MiguelViannaStreva](https://www.github.com/migstreva)

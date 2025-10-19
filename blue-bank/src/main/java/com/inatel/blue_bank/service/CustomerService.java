@@ -3,6 +3,7 @@ package com.inatel.blue_bank.service;
 import com.inatel.blue_bank.model.Customer;
 import com.inatel.blue_bank.model.DocType;
 import com.inatel.blue_bank.repository.CustomerRepository;
+import com.inatel.blue_bank.validation.CustomerValidator;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Example;
 import org.springframework.data.domain.ExampleMatcher;
@@ -18,9 +19,10 @@ import java.util.UUID;
 public class CustomerService {
     // CRUD
     private final CustomerRepository repository;
+    private final CustomerValidator validator;
 
     public Customer save(Customer customer) {
-        // TODO: VALIDATION
+        validator.validate(customer);
         return repository.save(customer);
     }
 
@@ -29,7 +31,7 @@ public class CustomerService {
     }
 
     public Optional<Customer> findByDoc(DocType docType, String docNumber) {
-        return repository.findByDoc(docType, docNumber);
+        return repository.findByDocTypeAndDocNumber(docType, docNumber);
     }
 
     public List<Customer> searchByExample(String name,
@@ -60,7 +62,7 @@ public class CustomerService {
         if(customer.getId() == null) {
             throw new IllegalArgumentException("Customer not found");
         }
-        // TODO: VALIDATION
+        validator.validate(customer);
         repository.save(customer);
     }
 

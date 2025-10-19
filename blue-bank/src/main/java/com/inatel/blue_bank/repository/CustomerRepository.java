@@ -9,5 +9,11 @@ import java.util.UUID;
 
 public interface CustomerRepository extends JpaRepository<Customer, UUID> {
 
-    Optional<Customer> findByDoc(DocType docType, String docNumber);
+    Optional<Customer> findByDocTypeAndDocNumber(DocType docType, String docNumber);
+    Optional<Customer> findByDocTypeAndDocNumberOrPhoneOrEmail(
+            DocType docType,
+            String docNumber,
+            String phone,
+            String email
+    );
 }

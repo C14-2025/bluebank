@@ -63,14 +63,14 @@ public class CustomerServiceTest {
         c.setDocType(type);
         c.setDocNumber(number);
 
-        when(repository.findByDoc(type, number)).thenReturn(Optional.of(c));
+        when(repository.findByDocTypeAndDocNumber(type, number)).thenReturn(Optional.of(c));
 
         Optional<Customer> optionalC = service.findByDoc(type, number);
 
         assertTrue(optionalC.isPresent());
         assertEquals(Optional.of(type), optionalC.map(Customer::getDocType));
         assertEquals(Optional.of(number), optionalC.map(Customer::getDocNumber));
-        verify(repository, times(1)).findByDoc(type, number);
+        verify(repository, times(1)).findByDocTypeAndDocNumber(type, number);
     }
 
     /*

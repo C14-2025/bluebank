@@ -40,7 +40,7 @@ public class Customer {
     @Column(length = 30, nullable = false)
     private String nationality;
 
-    @Column(length = 20, nullable = false)
+    @Column(length = 30, nullable = false)
     private String phone;
 
     @Column(length = 100, nullable = false)

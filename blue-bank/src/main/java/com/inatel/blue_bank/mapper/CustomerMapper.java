@@ -13,7 +13,6 @@ import org.mapstruct.MappingTarget;
 public interface CustomerMapper {
 
     @Mapping(target = "phone", ignore = true) // Set manually
-    @Mapping(target = "countryCode", ignore = true) // Not present in entity
     Customer toEntity(CustomerRequestDTO dto);
 
     @AfterMapping

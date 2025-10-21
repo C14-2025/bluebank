@@ -22,7 +22,10 @@ public class PhoneNumberValidator implements ConstraintValidator<ValidPhoneNumbe
 
         try {
             PhoneNumberUtil phoneUtil = PhoneNumberUtil.getInstance();
-            Phonenumber.PhoneNumber number = phoneUtil.parse(phone, countryCode.replace("+", ""));
+            int code = Integer.parseInt(countryCode.replace("+", ""));
+            String region = phoneUtil.getRegionCodeForCountryCode(code);
+            Phonenumber.PhoneNumber number = phoneUtil.parse(phone, region);
+
             return phoneUtil.isValidNumber(number);
         } catch (NumberParseException e) {
             return false;

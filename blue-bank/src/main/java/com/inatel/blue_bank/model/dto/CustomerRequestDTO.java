@@ -15,7 +15,7 @@ public record CustomerRequestDTO(
         @Past(message = "DOB cannot be in the future")
         LocalDate dob,
         @NotNull(message = "Mandatory field")
-        @Size(min = 2, max = 2, message = "Field too long or too short")
+        @Size(min = 2, max = 30, message = "Field too long or too short")
         String nationality,
         @NotBlank(message = "Mandatory field")
         String phone,

@@ -1,5 +1,6 @@
 package com.inatel.blue_bank.model.dto;
 
+import com.inatel.blue_bank.model.Account;
 import com.inatel.blue_bank.model.DocType;
 import com.inatel.blue_bank.validation.ValidPhoneNumber;
 import jakarta.validation.constraints.*;

@@ -29,6 +29,5 @@ public class CustomerController implements GenericController {
         URI location = generateHeaderLocation(customer.getId());
         return ResponseEntity.created(location).build();
     }
-
     
 }

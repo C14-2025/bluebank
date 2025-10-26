@@ -1,13 +1,12 @@
 package com.inatel.blue_bank.model.dto;
 
-import com.inatel.blue_bank.model.Account;
 import com.inatel.blue_bank.model.DocType;
 import com.inatel.blue_bank.validation.ValidPhoneNumber;
 import jakarta.validation.constraints.*;
 
 import java.time.LocalDate;
 
-@ValidPhoneNumber
+@ValidPhoneNumber(message = "Invalid phone number")
 public record CustomerRequestDTO(
         @NotBlank(message = "Mandatory field")
         @Size(min = 2, max = 150, message = "Field too long or too short")

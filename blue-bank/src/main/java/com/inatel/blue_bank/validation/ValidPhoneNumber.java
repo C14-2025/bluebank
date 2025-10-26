@@ -10,7 +10,7 @@ import java.lang.annotation.*;
 @Target({ElementType.TYPE})
 @Retention(RetentionPolicy.RUNTIME)
 public @interface ValidPhoneNumber {
-    String message() default "Invalid phone number or country code";
+    String message() default "{ValidPhoneNumber.message}";
     Class<?>[] groups() default {};
     Class<? extends Payload>[] payload() default {};
 }

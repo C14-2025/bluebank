@@ -11,25 +11,42 @@ public class PhoneNumberValidator implements ConstraintValidator<ValidPhoneNumbe
 
     @Override
     public boolean isValid(CustomerRequestDTO dto, ConstraintValidatorContext context) {
-        if (dto == null) return false;
+        if (dto == null) return true;
 
         String phone = dto.phone();
         String countryCode = dto.countryCode();
-
-        if (phone == null || phone.isBlank() || countryCode == null || countryCode.isBlank()) {
-            return false;
-        }
 
         try {
             PhoneNumberUtil phoneUtil = PhoneNumberUtil.getInstance();
             int code = Integer.parseInt(countryCode.replace("+", ""));
             String region = phoneUtil.getRegionCodeForCountryCode(code);
+
+            if (region == null) {
+                addViolation(context, "countryCode", "Invalid country code");
+                return false;
+            }
+
             Phonenumber.PhoneNumber number = phoneUtil.parse(phone, region);
 
-            return phoneUtil.isValidNumber(number);
+            if (!phoneUtil.isValidNumber(number)) {
+                addViolation(context, "phone", "Invalid phone number");
+                return false;
+            }
+
+            return true;
         } catch (NumberParseException e) {
+            addViolation(context, "phone", "Invalid phone number format");
+            return false;
+        } catch (Exception e) {
+            addViolation(context, "phone", "Unexpected validation error");
             return false;
         }
     }
-}
 
+    private void addViolation(ConstraintValidatorContext context, String field, String message) {
+        context.disableDefaultConstraintViolation();
+        context.buildConstraintViolationWithTemplate(message)
+                .addPropertyNode(field)
+                .addConstraintViolation();
+    }
+}

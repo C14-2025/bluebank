@@ -50,13 +50,13 @@ public class CustomerServiceTest {
         c.setFullName("Charlie");
         c.setId(id);
 
-        when(repository.findById(id)).thenReturn(Optional.of(c));
+        when(repository.findByIdWithoutAccount(id)).thenReturn(Optional.of(c));
 
         Optional<Customer> optionalC = service.findById(id);
 
         assertTrue(optionalC.isPresent());
         assertEquals(Optional.of(id), optionalC.map(Customer::getId));
-        verify(repository, times(1)).findById(id);
+        verify(repository, times(1)).findByIdWithoutAccount(id);
     }
 
     @Test

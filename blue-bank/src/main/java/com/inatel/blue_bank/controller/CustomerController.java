@@ -2,6 +2,7 @@ package com.inatel.blue_bank.controller;
 
 import com.inatel.blue_bank.mapper.CustomerMapper;
 import com.inatel.blue_bank.model.Customer;
+import com.inatel.blue_bank.model.DocType;
 import com.inatel.blue_bank.model.dto.CustomerRequestDTO;
 import com.inatel.blue_bank.model.dto.CustomerResponseDTO;
 import com.inatel.blue_bank.service.CustomerService;
@@ -36,6 +37,23 @@ public class CustomerController implements GenericController {
 
         return customerService
                 .findById(customerId)
+                .map(customer -> {
+                    CustomerResponseDTO dto = customerMapper
+                            .toResponseDTO(customer);
+                    return ResponseEntity.ok(dto);
+                })
+                .orElseGet(() -> ResponseEntity.notFound().build());
+    }
+
+    @GetMapping
+    public ResponseEntity<CustomerResponseDTO> getDetailsByDoc(
+            @RequestParam(value = "docType", required = true) String docType,
+            @RequestParam(value = "docNumber", required = true) String docNumber) {
+        DocType type = DocType.valueOf(docType);
+        String number = docNumber;
+
+        return customerService
+                .findByDoc(type, number)
                 .map(customer -> {
                     CustomerResponseDTO dto = customerMapper
                             .toResponseDTO(customer);

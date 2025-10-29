@@ -11,7 +11,15 @@ import java.util.UUID;
 
 public interface CustomerRepository extends JpaRepository<Customer, UUID> {
 
-    Optional<Customer> findByDocTypeAndDocNumber(DocType docType, String docNumber);
+    @Query("""
+    SELECT new com.inatel.blue_bank.model.Customer(
+        c.id, c.fullName, c.dob, c.nationality, c.phone,
+        c.email, c.occupation, c.docType, c.docNumber,
+        c.createdAt, c.updatedAt
+    )
+    FROM Customer c WHERE (c.docType = :docType AND c.docNumber = :docNumber)
+    """)
+    Optional<Customer> findByDocTypeAndDocNumber(@Param("docType") DocType docType, @Param("docNumber") String docNumber);
 
     // These query params were created,
     // in order to avoid Jpa relationship

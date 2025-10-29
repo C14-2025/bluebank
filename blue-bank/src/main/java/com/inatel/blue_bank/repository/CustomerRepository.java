@@ -45,4 +45,14 @@ public interface CustomerRepository extends JpaRepository<Customer, UUID> {
             @Param("email") String email
     );
 
+    @Query("""
+    SELECT new com.inatel.blue_bank.model.Customer(
+        c.id, c.fullName, c.dob, c.nationality, c.phone,
+        c.email, c.occupation, c.docType, c.docNumber,
+        c.createdAt, c.updatedAt
+    )
+    FROM Customer c WHERE c.id = :id
+    """)
+    Optional<Customer> findByIdWithoutAccount(@Param("id") UUID id);
+
 }

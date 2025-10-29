@@ -27,7 +27,7 @@ public class CustomerService {
     }
 
     public Optional<Customer> findById(UUID id) {
-        return repository.findById(id);
+        return repository.findByIdWithoutAccount(id);
     }
 
     public Optional<Customer> findByDoc(DocType docType, String docNumber) {

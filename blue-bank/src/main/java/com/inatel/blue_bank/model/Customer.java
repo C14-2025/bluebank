@@ -2,6 +2,7 @@ package com.inatel.blue_bank.model;
 
 import jakarta.persistence.*;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 import org.springframework.data.annotation.CreatedDate;
@@ -17,6 +18,7 @@ import java.util.UUID;
 @Getter
 @Setter
 @ToString
+@NoArgsConstructor
 @EntityListeners(AuditingEntityListener.class)
 public class Customer {
 
@@ -59,4 +61,29 @@ public class Customer {
     @CreatedDate
     @Column(name = "created_at", nullable = false)
     private LocalDateTime createdAt;
+
+    public Customer(UUID id,
+                    String fullName,
+                    LocalDate dob,
+                    String nationality,
+                    String phone,
+                    String email,
+                    String occupation,
+                    DocType docType,
+                    String docNumber,
+                    LocalDateTime createdAt,
+                    LocalDateTime updatedAt) {
+        this.id = id;
+        this.fullName = fullName;
+        this.dob = dob;
+        this.nationality = nationality;
+        this.phone = phone;
+        this.email = email;
+        this.occupation = occupation;
+        this.docType = docType;
+        this.docNumber = docNumber;
+        this.createdAt = createdAt;
+        this.updatedAt = updatedAt;
+    }
+
 }

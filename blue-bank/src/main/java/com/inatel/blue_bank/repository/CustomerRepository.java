@@ -2,14 +2,18 @@ package com.inatel.blue_bank.repository;
 
 import com.inatel.blue_bank.model.Customer;
 import com.inatel.blue_bank.model.DocType;
+import com.inatel.blue_bank.repository.custom.CustomerRepositoryCustom;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.util.Optional;
 import java.util.UUID;
 
-public interface CustomerRepository extends JpaRepository<Customer, UUID> {
+public interface CustomerRepository extends JpaRepository<Customer, UUID>,
+        JpaSpecificationExecutor<Customer>,
+        CustomerRepositoryCustom {
 
     @Query("""
     SELECT new com.inatel.blue_bank.model.Customer(
@@ -62,5 +66,6 @@ public interface CustomerRepository extends JpaRepository<Customer, UUID> {
     FROM Customer c WHERE c.id = :id
     """)
     Optional<Customer> findByIdWithoutAccount(@Param("id") UUID id);
+
 
 }

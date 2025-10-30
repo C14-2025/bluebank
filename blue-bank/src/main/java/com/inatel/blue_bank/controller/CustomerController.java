@@ -8,10 +8,13 @@ import com.inatel.blue_bank.model.dto.CustomerResponseDTO;
 import com.inatel.blue_bank.service.CustomerService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 @RestController
@@ -45,10 +48,10 @@ public class CustomerController implements GenericController {
                 .orElseGet(() -> ResponseEntity.notFound().build());
     }
 
-    @GetMapping
+    @GetMapping("by-doc")
     public ResponseEntity<CustomerResponseDTO> getDetailsByDoc(
-            @RequestParam(value = "docType", required = true) String docType,
-            @RequestParam(value = "docNumber", required = true) String docNumber) {
+            @RequestParam(value = "doc-type", required = true) String docType,
+            @RequestParam(value = "doc-number", required = true) String docNumber) {
         DocType type = DocType.valueOf(docType);
         String number = docNumber;
 
@@ -60,5 +63,40 @@ public class CustomerController implements GenericController {
                     return ResponseEntity.ok(dto);
                 })
                 .orElseGet(() -> ResponseEntity.notFound().build());
+    }
+
+    @GetMapping
+    public ResponseEntity<Page<CustomerResponseDTO>> search(
+            @RequestParam(value = "full-name", required = false)
+            String fullName,
+            @RequestParam(value = "dob", required = false)
+            LocalDate dob,
+            @RequestParam(value = "nationality", required = false)
+            String nationality,
+            @RequestParam(value = "occupation", required = false)
+            String occupation,
+            @RequestParam(value = "created-at", required = false)
+            LocalDateTime createdAt,
+            @RequestParam(value = "updated_at", required = false)
+            LocalDateTime updatedAt,
+            @RequestParam(value = "page", defaultValue = "0")
+            Integer page,
+            @RequestParam(value = "page-size", defaultValue = "10")
+            Integer pageSize
+    ){
+        Page<Customer> pageResult = customerService
+                .search(
+                        fullName,
+                        dob,
+                        nationality,
+                        occupation,
+                        createdAt,
+                        updatedAt,
+                        page,
+                        pageSize);
+
+        Page<CustomerResponseDTO> result = pageResult.map(customerMapper::toResponseDTO);
+
+        return ResponseEntity.ok(result);
     }
 }

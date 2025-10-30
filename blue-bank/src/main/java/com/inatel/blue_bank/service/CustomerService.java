@@ -5,14 +5,17 @@ import com.inatel.blue_bank.model.DocType;
 import com.inatel.blue_bank.repository.CustomerRepository;
 import com.inatel.blue_bank.validation.CustomerValidator;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Example;
-import org.springframework.data.domain.ExampleMatcher;
+import org.springframework.data.domain.*;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+
+import static com.inatel.blue_bank.repository.specs.CustomerSpecs.*;
 
 @Service
 @RequiredArgsConstructor
@@ -20,6 +23,7 @@ public class CustomerService {
     // CRUD
     private final CustomerRepository repository;
     private final CustomerValidator validator;
+    private final CustomerRepository customerRepository;
 
     public Customer save(Customer customer) {
         validator.validate(customer);
@@ -34,28 +38,45 @@ public class CustomerService {
         return repository.findByDocTypeAndDocNumber(docType, docNumber);
     }
 
-    public List<Customer> searchByExample(String name,
-                                          String email,
-                                          String nationality,
-                                          String phone,
-                                          LocalDate dob,
-                                          String occupation)
+    public Page<Customer> search(String fullName,
+                                 LocalDate dob,
+                                 String nationality,
+                                 String occupation,
+                                 LocalDateTime createdAt,
+                                 LocalDateTime updatedAt,
+                                 Integer page,
+                                 Integer pageSize)
     {
-        Customer customer = new Customer();
-        customer.setFullName(name);
-        customer.setEmail(email);
-        customer.setNationality(nationality);
-        customer.setPhone(phone);
-        customer.setDob(dob);
 
-        ExampleMatcher matcher = ExampleMatcher
-                .matching()
-                .withIgnorePaths("id", "docNumber", "docType", "updatedAt")
-                .withIgnoreNullValues()
-                .withIgnoreCase()
-                .withStringMatcher(ExampleMatcher.StringMatcher.CONTAINING);
-        Example<Customer> customerExample = Example.of(customer, matcher);
-        return repository.findAll(customerExample);
+        Specification<Customer> specs = ((root, query, cb) -> cb.conjunction() );
+
+        if (fullName != null) {
+            specs = specs.and(fullNameLike(fullName));
+        }
+
+        if(dob != null) {
+            specs = specs.and(dobEqual(dob));
+        }
+
+        if (nationality != null) {
+            specs = specs.and(nationalityLike(nationality));
+        }
+
+        if (occupation != null) {
+            specs = specs.and(occupationLike(occupation));
+        }
+
+        if (createdAt != null) {
+            specs = specs.and(createdAtEqual(createdAt));
+        }
+
+        if(updatedAt != null) {
+            specs = specs.and(updatedAtEqual(updatedAt));
+        }
+
+        Pageable pageRequest = PageRequest.of(page, pageSize);
+
+        return customerRepository.findAllWithoutAccount(specs, pageRequest);
     }
 
     public void update(Customer customer) {

@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.*;
 import java.net.URI;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.Optional;
 import java.util.UUID;
 
 @RestController
@@ -22,14 +23,13 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class CustomerController implements GenericController {
 
-    private final CustomerService service;
     private final CustomerMapper customerMapper;
     private final CustomerService customerService;
 
     @PostMapping
     public ResponseEntity<Void> save(@RequestBody @Valid CustomerRequestDTO dto) {
         Customer customer = customerMapper.toEntity(dto);
-        service.save(customer);
+        customerService.save(customer);
         URI location = generateHeaderLocation(customer.getId());
         return ResponseEntity.created(location).build();
     }
@@ -98,5 +98,47 @@ public class CustomerController implements GenericController {
         Page<CustomerResponseDTO> result = pageResult.map(customerMapper::toResponseDTO);
 
         return ResponseEntity.ok(result);
+    }
+
+
+    // Table 'accounts' is required for this to work properly
+    @PutMapping("{id}")
+    public ResponseEntity<Void> update(
+            @PathVariable("id") String id, @RequestBody @Valid CustomerRequestDTO dto) {
+
+        UUID customerId = UUID.fromString(id);
+        Optional<Customer> customerOptional = customerService.findById(customerId);
+
+        if(customerOptional.isEmpty()) {
+            return ResponseEntity.notFound().build();
+        }
+
+        Customer customer = customerOptional.get();
+        customer.setFullName(dto.fullName());
+        customer.setDob(dto.dob());
+        customer.setNationality(dto.nationality());
+        customer.setPhone(dto.phone());
+        customer.setEmail(dto.email());
+        customer.setOccupation(dto.occupation());
+        customer.setDocType(dto.docType());
+        customer.setDocNumber(dto.docNumber());
+
+        customerService.update(customer);
+
+        return ResponseEntity.noContent().build();
+    }
+
+    @DeleteMapping("{id}")
+    public ResponseEntity<Void> delete(@PathVariable("id") String id) {
+        UUID customerId = UUID.fromString(id);
+        Optional<Customer> customerOptional = customerService.findById(customerId);
+
+        if(customerOptional.isEmpty()) {
+            return ResponseEntity.notFound().build();
+        }
+
+        customerService.delete(customerOptional.get());
+
+        return ResponseEntity.noContent().build();
     }
 }

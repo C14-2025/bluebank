@@ -26,7 +26,7 @@ public class Account {
     private UUID id;
 
     @Column(name = "account_number", length = 20, nullable = false, unique = true)
-    private String accountNumber;
+    private Long accountNumber;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "account_type", nullable = false)
@@ -36,7 +36,7 @@ public class Account {
     private BigDecimal balance;
 
     @Column(name = "branch_code", length = 10, nullable = false)
-    private String branchCode;
+    private Integer branchCode;
 
     @OneToOne
     @JoinColumn(name = "customer_id", referencedColumnName = "id")

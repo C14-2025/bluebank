@@ -23,7 +23,6 @@ public class CustomerService {
     // CRUD
     private final CustomerRepository repository;
     private final CustomerValidator validator;
-    private final CustomerRepository customerRepository;
 
     public Customer save(Customer customer) {
         validator.validate(customer);
@@ -76,7 +75,7 @@ public class CustomerService {
 
         Pageable pageRequest = PageRequest.of(page, pageSize);
 
-        return customerRepository.findAllWithoutAccount(specs, pageRequest);
+        return repository.findAllWithoutAccount(specs, pageRequest);
     }
 
     public void update(Customer customer) {

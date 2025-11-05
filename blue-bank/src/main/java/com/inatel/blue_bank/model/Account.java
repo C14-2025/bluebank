@@ -28,10 +28,6 @@ public class Account {
     @Column(name = "account_number", length = 20, nullable = false, unique = true)
     private Long accountNumber;
 
-    @Enumerated(EnumType.STRING)
-    @Column(name = "account_type", nullable = false)
-    private AccountType accountType;
-
     @Column(name = "balance", nullable = false)
     private BigDecimal balance;
 
@@ -44,6 +40,9 @@ public class Account {
 
     @OneToMany(mappedBy = "account")
     private List<Card> cards;
+
+//    @OneToMany(mappedBy = "account")
+//    private List<Investment> investments;
 
     @CreatedDate
     @Column(name = "created_at", nullable = false)

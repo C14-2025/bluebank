@@ -1,7 +1,6 @@
 package com.inatel.blue_bank.service;
 
 import com.inatel.blue_bank.model.Account;
-import com.inatel.blue_bank.model.AccountType;
 import com.inatel.blue_bank.model.DocType;
 import com.inatel.blue_bank.repository.AccountRepository;
 import lombok.RequiredArgsConstructor;
@@ -37,7 +36,6 @@ public class AccountService {
     }
 
     public Page<Account> search(Long accountNumber,
-                                 AccountType accountType,
                                  Integer branchCode,
                                  LocalDateTime createdAt,
                                  LocalDateTime updatedAt,
@@ -49,10 +47,6 @@ public class AccountService {
 
         if (accountNumber != null) {
             specs = specs.and(accountNumberEqual(accountNumber));
-        }
-
-        if(accountType != null) {
-            specs = specs.and(accountTypeEqual(accountType));
         }
 
         if (branchCode != null) {

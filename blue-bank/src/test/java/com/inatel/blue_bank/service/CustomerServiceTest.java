@@ -1,5 +1,6 @@
 package com.inatel.blue_bank.service;
 
+import com.inatel.blue_bank.exception.DeniedOperationException;
 import com.inatel.blue_bank.model.Customer;
 import com.inatel.blue_bank.model.DocType;
 import com.inatel.blue_bank.repository.CustomerRepository;
@@ -9,9 +10,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.data.domain.Example;
 
-import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -83,15 +82,6 @@ public class CustomerServiceTest {
         verify(repository, times(1)).findByDocTypeAndDocNumber(type, number);
     }
 
-    /*
-    searchByExample(String name,
-                                          String email,
-                                          String nationality,
-                                          String phone,
-                                          LocalDate dob,
-                                          String occupation)
-     */
-
     @Test
     public void updateNoIdExceptionTest() {
         Customer c = new Customer(); // Customer with no id
@@ -108,6 +98,21 @@ public class CustomerServiceTest {
         service.delete(c);
 
         verify(repository, times(1)).delete(c);
+    }
+
+    @Test
+    void delete_shouldThrowDeniedOperationException_whenCustomerHasAccount() {
+        Customer customer = new Customer();
+        CustomerService spyService = spy(service);
+        doReturn(true).when(spyService).hasAccount(customer);
+
+        DeniedOperationException exception = assertThrows(
+                DeniedOperationException.class,
+                () -> spyService.delete(customer)
+        );
+
+        assertEquals("Operation denied: Customer has an account", exception.getMessage());
+        verify(repository, never()).delete(any(Customer.class));
     }
 }
 

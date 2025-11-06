@@ -1,7 +1,9 @@
 package com.inatel.blue_bank.service;
 
+import com.inatel.blue_bank.exception.DeniedOperationException;
 import com.inatel.blue_bank.model.Customer;
 import com.inatel.blue_bank.model.DocType;
+import com.inatel.blue_bank.repository.AccountRepository;
 import com.inatel.blue_bank.repository.CustomerRepository;
 import com.inatel.blue_bank.validation.CustomerValidator;
 import lombok.RequiredArgsConstructor;
@@ -22,6 +24,7 @@ import static com.inatel.blue_bank.repository.specs.CustomerSpecs.*;
 public class CustomerService {
     // CRUD
     private final CustomerRepository repository;
+    private final AccountRepository accountRepository;
     private final CustomerValidator validator;
 
     public Customer save(Customer customer) {
@@ -87,14 +90,15 @@ public class CustomerService {
     }
 
     public void delete(Customer customer) {
-        // TODO: EXCEPTION
-//        if(hasAccount(customer)){
-//            throw new DeniedOperationException(
-//                    "Operation denied: Customer has an account"
-//            )
-//        }
+        if(hasAccount(customer)){
+            throw new DeniedOperationException(
+                    "Operation denied: Customer has an account"
+            );
+        }
         repository.delete(customer);
     }
 
-    // TODO: hasAccount
+    public boolean hasAccount(Customer customer) {
+        return accountRepository.existsByCustomer(customer);
+    }
 }

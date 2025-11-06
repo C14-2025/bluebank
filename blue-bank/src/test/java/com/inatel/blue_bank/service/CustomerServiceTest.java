@@ -18,6 +18,12 @@ import java.util.UUID;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
+/**
+ * Unit tests for {@link CustomerService}.
+ *
+ * Uses Mockito for mocking repository dependencies.
+ * Each test validates a single, isolated behavior of the service.
+ */
 @ExtendWith(MockitoExtension.class)
 public class CustomerServiceTest {
 

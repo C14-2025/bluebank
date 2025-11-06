@@ -11,10 +11,6 @@ public class AccountSpecs {
         return (root, query, cb) -> cb.equal(root.get("accountNumber"), accountNumber);
     }
 
-    public static Specification<Account> accountTypeEqual(AccountType accountType) {
-        return (root, query, cb) -> cb.equal(root.get("accountType"), accountType);
-    }
-
     public static Specification<Account> branchCodeEqual(Integer branchCode) {
         return (root, query, cb) -> cb.equal(root.get("branchCode"), branchCode);
     }

@@ -1,6 +1,6 @@
 package com.inatel.blue_bank.model.dto;
 
-import com.inatel.blue_bank.model.DocType;
+import com.inatel.blue_bank.model.entity.DocType;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;

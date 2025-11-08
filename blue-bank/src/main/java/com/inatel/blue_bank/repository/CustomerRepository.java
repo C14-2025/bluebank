@@ -1,7 +1,7 @@
 package com.inatel.blue_bank.repository;
 
-import com.inatel.blue_bank.model.Customer;
-import com.inatel.blue_bank.model.DocType;
+import com.inatel.blue_bank.model.entity.Customer;
+import com.inatel.blue_bank.model.entity.DocType;
 import com.inatel.blue_bank.repository.custom.CustomerRepositoryCustom;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
@@ -66,6 +66,5 @@ public interface CustomerRepository extends JpaRepository<Customer, UUID>,
     FROM Customer c WHERE c.id = :id
     """)
     Optional<Customer> findByIdWithoutAccount(@Param("id") UUID id);
-
 
 }

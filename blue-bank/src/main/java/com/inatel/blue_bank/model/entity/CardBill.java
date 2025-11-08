@@ -1,4 +1,4 @@
-package com.inatel.blue_bank.model;
+package com.inatel.blue_bank.model.entity;
 
 import jakarta.persistence.*;
 import lombok.Getter;

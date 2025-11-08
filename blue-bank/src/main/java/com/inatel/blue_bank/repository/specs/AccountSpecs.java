@@ -1,6 +1,6 @@
 package com.inatel.blue_bank.repository.specs;
 
-import com.inatel.blue_bank.model.Account;
+import com.inatel.blue_bank.model.entity.Account;
 import org.springframework.data.jpa.domain.Specification;
 
 import java.time.LocalDateTime;

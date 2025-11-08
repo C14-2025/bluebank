@@ -1,4 +1,4 @@
-package com.inatel.blue_bank.validation;
+package com.inatel.blue_bank.validator;
 
 import jakarta.validation.Constraint;
 import jakarta.validation.Payload;

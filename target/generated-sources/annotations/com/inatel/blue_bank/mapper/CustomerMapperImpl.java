@@ -1,9 +1,9 @@
 package com.inatel.blue_bank.mapper;
 
-import com.inatel.blue_bank.model.Customer;
-import com.inatel.blue_bank.model.DocType;
 import com.inatel.blue_bank.model.dto.CustomerRequestDTO;
 import com.inatel.blue_bank.model.dto.CustomerResponseDTO;
+import com.inatel.blue_bank.model.entity.Customer;
+import com.inatel.blue_bank.model.entity.DocType;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.UUID;
@@ -12,7 +12,7 @@ import org.springframework.stereotype.Component;
 
 @Generated(
     value = "org.mapstruct.ap.MappingProcessor",
-    date = "2025-10-29T03:06:02-0300",
+    date = "2025-11-07T23:27:01-0300",
     comments = "version: 1.6.3, compiler: javac, environment: Java 23.0.2 (Oracle Corporation)"
 )
 @Component

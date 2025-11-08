@@ -2,7 +2,7 @@ package com.inatel.blue_bank.mapper;
 
 import com.google.i18n.phonenumbers.PhoneNumberUtil;
 import com.google.i18n.phonenumbers.Phonenumber;
-import com.inatel.blue_bank.model.Customer;
+import com.inatel.blue_bank.model.entity.Customer;
 import com.inatel.blue_bank.model.dto.CustomerRequestDTO;
 import com.inatel.blue_bank.model.dto.CustomerResponseDTO;
 import org.mapstruct.AfterMapping;

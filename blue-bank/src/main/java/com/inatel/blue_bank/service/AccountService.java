@@ -1,8 +1,10 @@
 package com.inatel.blue_bank.service;
 
-import com.inatel.blue_bank.model.Account;
-import com.inatel.blue_bank.model.DocType;
+import com.inatel.blue_bank.exception.DeniedOperationException;
+import com.inatel.blue_bank.model.entity.Account;
+import com.inatel.blue_bank.model.entity.DocType;
 import com.inatel.blue_bank.repository.AccountRepository;
+import com.inatel.blue_bank.validator.AccountValidator;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -10,6 +12,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.Optional;
 import java.util.UUID;
@@ -21,9 +24,10 @@ import static com.inatel.blue_bank.repository.specs.AccountSpecs.*;
 public class AccountService {
 
     private final AccountRepository repository;
+    private final AccountValidator validator;
 
     public Account save(Account account) {
-        // Validate
+        validator.validate(account);
         return repository.save(account);
     }
 
@@ -70,12 +74,20 @@ public class AccountService {
         if(account.getId() == null) {
             throw new IllegalArgumentException("Account not found");
         }
-        // Validate
+        validator.validate(account);
         repository.save(account);
     }
 
     public void delete(Account account) {
-        // Exception balance > 0.00
+        if(hasBalance(account)){
+            throw new DeniedOperationException(
+                    "Account has balance greater than zero"
+            );
+        }
         repository.delete(account);
+    }
+
+    public boolean hasBalance(Account account) {
+        return BigDecimal.ZERO.compareTo(account.getBalance()) != 0;
     }
 }

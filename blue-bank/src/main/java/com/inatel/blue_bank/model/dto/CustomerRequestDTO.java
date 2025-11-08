@@ -1,7 +1,7 @@
 package com.inatel.blue_bank.model.dto;
 
-import com.inatel.blue_bank.model.DocType;
-import com.inatel.blue_bank.validation.ValidPhoneNumber;
+import com.inatel.blue_bank.model.entity.DocType;
+import com.inatel.blue_bank.validator.ValidPhoneNumber;
 import jakarta.validation.constraints.*;
 
 import java.time.LocalDate;

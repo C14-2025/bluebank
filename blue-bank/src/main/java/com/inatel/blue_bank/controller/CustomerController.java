@@ -1,8 +1,8 @@
 package com.inatel.blue_bank.controller;
 
 import com.inatel.blue_bank.mapper.CustomerMapper;
-import com.inatel.blue_bank.model.Customer;
-import com.inatel.blue_bank.model.DocType;
+import com.inatel.blue_bank.model.entity.Customer;
+import com.inatel.blue_bank.model.entity.DocType;
 import com.inatel.blue_bank.model.dto.CustomerRequestDTO;
 import com.inatel.blue_bank.model.dto.CustomerResponseDTO;
 import com.inatel.blue_bank.service.CustomerService;
@@ -141,6 +141,4 @@ public class CustomerController implements GenericController {
 
         return ResponseEntity.noContent().build();
     }
-
-
 }

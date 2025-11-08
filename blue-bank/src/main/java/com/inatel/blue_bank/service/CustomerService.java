@@ -1,11 +1,11 @@
 package com.inatel.blue_bank.service;
 
 import com.inatel.blue_bank.exception.DeniedOperationException;
-import com.inatel.blue_bank.model.Customer;
-import com.inatel.blue_bank.model.DocType;
+import com.inatel.blue_bank.model.entity.Customer;
+import com.inatel.blue_bank.model.entity.DocType;
 import com.inatel.blue_bank.repository.AccountRepository;
 import com.inatel.blue_bank.repository.CustomerRepository;
-import com.inatel.blue_bank.validation.CustomerValidator;
+import com.inatel.blue_bank.validator.CustomerValidator;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.*;
 import org.springframework.data.jpa.domain.Specification;
@@ -13,7 +13,6 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -92,7 +91,7 @@ public class CustomerService {
     public void delete(Customer customer) {
         if(hasAccount(customer)){
             throw new DeniedOperationException(
-                    "Operation denied: Customer has an account"
+                    "Customer has an account"
             );
         }
         repository.delete(customer);

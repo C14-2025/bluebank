@@ -1,7 +1,7 @@
-package com.inatel.blue_bank.validation;
+package com.inatel.blue_bank.validator;
 
 import com.inatel.blue_bank.exception.DuplicateRegisterException;
-import com.inatel.blue_bank.model.Customer;
+import com.inatel.blue_bank.model.entity.Customer;
 import com.inatel.blue_bank.repository.CustomerRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;

@@ -1,4 +1,4 @@
-package com.inatel.blue_bank.validation;
+package com.inatel.blue_bank.validator;
 
 import com.google.i18n.phonenumbers.NumberParseException;
 import com.google.i18n.phonenumbers.PhoneNumberUtil;

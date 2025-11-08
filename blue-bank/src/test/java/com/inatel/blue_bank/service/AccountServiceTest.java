@@ -1,8 +1,8 @@
 package com.inatel.blue_bank.service;
 
-import com.inatel.blue_bank.model.Account;
-import com.inatel.blue_bank.model.Customer;
-import com.inatel.blue_bank.model.DocType;
+import com.inatel.blue_bank.model.entity.Account;
+import com.inatel.blue_bank.model.entity.Customer;
+import com.inatel.blue_bank.model.entity.DocType;
 import com.inatel.blue_bank.repository.AccountRepository;
 import com.inatel.blue_bank.repository.CustomerRepository;
 import org.junit.jupiter.api.BeforeEach;

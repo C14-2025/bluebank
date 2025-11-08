@@ -1,6 +1,6 @@
 package com.inatel.blue_bank.repository.custom;
 
-import com.inatel.blue_bank.model.Customer;
+import com.inatel.blue_bank.model.entity.Customer;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.criteria.CriteriaBuilder;

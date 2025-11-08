@@ -1,10 +1,10 @@
 package com.inatel.blue_bank.service;
 
 import com.inatel.blue_bank.exception.DeniedOperationException;
-import com.inatel.blue_bank.model.Customer;
-import com.inatel.blue_bank.model.DocType;
+import com.inatel.blue_bank.model.entity.Customer;
+import com.inatel.blue_bank.model.entity.DocType;
 import com.inatel.blue_bank.repository.CustomerRepository;
-import com.inatel.blue_bank.validation.CustomerValidator;
+import com.inatel.blue_bank.validator.CustomerValidator;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;

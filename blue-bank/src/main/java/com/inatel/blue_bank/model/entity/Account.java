@@ -1,4 +1,4 @@
-package com.inatel.blue_bank.model;
+package com.inatel.blue_bank.model.entity;
 
 import jakarta.persistence.*;
 import lombok.Getter;
@@ -31,7 +31,7 @@ public class Account {
     @Column(name = "balance", nullable = false)
     private BigDecimal balance;
 
-    @Column(name = "branch_code", length = 10, nullable = false)
+    @Column(name = "branch_code", nullable = false)
     private Integer branchCode;
 
     @OneToOne

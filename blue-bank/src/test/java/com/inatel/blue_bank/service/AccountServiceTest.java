@@ -5,6 +5,7 @@ import com.inatel.blue_bank.model.entity.Customer;
 import com.inatel.blue_bank.model.entity.DocType;
 import com.inatel.blue_bank.repository.AccountRepository;
 import com.inatel.blue_bank.repository.CustomerRepository;
+import com.inatel.blue_bank.validator.AccountValidator;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -35,7 +36,7 @@ class AccountServiceTest {
     private AccountRepository accountRepository;
 
     @Mock
-    private CustomerRepository customerRepository;
+    private AccountValidator validator;
 
     @InjectMocks
     private AccountService service;

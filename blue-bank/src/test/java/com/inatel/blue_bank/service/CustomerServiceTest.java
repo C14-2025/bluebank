@@ -94,24 +94,26 @@ public class CustomerServiceTest {
     @Test
     void deleteTest() {
         Customer c = new Customer();
+        CustomerService spyService = spy(service);
+        doReturn(false).when(spyService).hasAccount(c);
 
-        service.delete(c);
+        spyService.delete(c);
 
         verify(repository, times(1)).delete(c);
     }
 
     @Test
     void delete_shouldThrowDeniedOperationException_whenCustomerHasAccount() {
-        Customer customer = new Customer();
+        Customer c = new Customer();
         CustomerService spyService = spy(service);
-        doReturn(true).when(spyService).hasAccount(customer);
+        doReturn(true).when(spyService).hasAccount(c);
 
         DeniedOperationException exception = assertThrows(
                 DeniedOperationException.class,
-                () -> spyService.delete(customer)
+                () -> spyService.delete(c)
         );
 
-        assertEquals("Operation denied: Customer has an account", exception.getMessage());
+        assertEquals("Customer has an account", exception.getMessage());
         verify(repository, never()).delete(any(Customer.class));
     }
 }

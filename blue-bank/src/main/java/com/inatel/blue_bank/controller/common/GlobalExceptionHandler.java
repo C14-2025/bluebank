@@ -1,5 +1,7 @@
 package com.inatel.blue_bank.controller.common;
 
+import com.inatel.blue_bank.exception.CustomerNotFoundException;
+import com.inatel.blue_bank.exception.DeniedOperationException;
 import com.inatel.blue_bank.exception.DuplicateRegisterException;
 import com.inatel.blue_bank.model.dto.ErrorField;
 import com.inatel.blue_bank.model.dto.ErrorResponse;
@@ -51,6 +53,23 @@ public class GlobalExceptionHandler {
         return new ErrorResponse(
                 HttpStatus.INTERNAL_SERVER_ERROR.value(),
                 "An unexpected error occurred. Please contact administration.",
-                List.of());
+                List.of()
+        );
+    }
+
+    @ExceptionHandler(CustomerNotFoundException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ErrorResponse handleCustomerNotFoundException(CustomerNotFoundException e) {
+        return new ErrorResponse(
+                HttpStatus.BAD_REQUEST.value(), e.getMessage(), List.of()
+        );
+    }
+
+    @ExceptionHandler(DeniedOperationException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ErrorResponse handleCustomerNotFoundException(DeniedOperationException e) {
+        return new ErrorResponse(
+                HttpStatus.BAD_REQUEST.value(), e.getMessage(), List.of()
+        );
     }
 }

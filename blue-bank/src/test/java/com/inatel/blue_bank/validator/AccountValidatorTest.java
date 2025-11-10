@@ -15,6 +15,12 @@ import java.util.UUID;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
+/**
+ * Unit tests for {@link AccountValidator}.
+ *
+ * Uses Mockito for mocking repository dependencies.
+ * Each test validates a single, isolated behavior of the service.
+ */
 class AccountValidatorTest {
 
     @Mock
@@ -35,7 +41,7 @@ class AccountValidatorTest {
 
         account = new Account();
         account.setCustomer(customer);
-        account.setAccountNumber(12345L);
+        account.setAccountNumber("12345");
         account.setBranchCode(1);
     }
 
@@ -44,7 +50,7 @@ class AccountValidatorTest {
         // given
         account.setId(null);
         when(repository.existsDuplicateByCustomerOrAccountNumberAndBranchCode(
-                any(Customer.class), anyLong(), anyInt())
+                any(Customer.class), anyString(), anyInt())
         ).thenReturn(false);
 
         // when / then
@@ -62,7 +68,7 @@ class AccountValidatorTest {
         // given
         account.setId(null);
         when(repository.existsDuplicateByCustomerOrAccountNumberAndBranchCode(
-                any(Customer.class), anyLong(), anyInt())
+                any(Customer.class), anyString(), anyInt())
         ).thenReturn(true);
 
         // when / then
@@ -73,7 +79,7 @@ class AccountValidatorTest {
 
         assertEquals("Account already exists", ex.getMessage());
         verify(repository).existsDuplicateByCustomerOrAccountNumberAndBranchCode(
-                any(Customer.class), anyLong(), anyInt()
+                any(Customer.class), anyString(), anyInt()
         );
     }
 
@@ -82,7 +88,7 @@ class AccountValidatorTest {
         // given
         account.setId(UUID.randomUUID());
         when(repository.existsDuplicateForUpdate(
-                any(UUID.class), anyLong(), anyInt(), any(UUID.class))
+                any(UUID.class), anyString(), anyInt())
         ).thenReturn(false);
 
         // when / then
@@ -91,8 +97,7 @@ class AccountValidatorTest {
         verify(repository).existsDuplicateForUpdate(
                 eq(account.getId()),
                 eq(account.getAccountNumber()),
-                eq(account.getBranchCode()),
-                eq(account.getCustomer().getId())
+                eq(account.getBranchCode())
         );
     }
 
@@ -101,7 +106,7 @@ class AccountValidatorTest {
         // given
         account.setId(UUID.randomUUID());
         when(repository.existsDuplicateForUpdate(
-                any(UUID.class), anyLong(), anyInt(), any(UUID.class))
+                any(UUID.class), anyString(), anyInt())
         ).thenReturn(true);
 
         // when / then
@@ -112,7 +117,7 @@ class AccountValidatorTest {
 
         assertEquals("Another account already uses these details OR could not associate account with this customer", ex.getMessage());
         verify(repository).existsDuplicateForUpdate(
-                any(UUID.class), anyLong(), anyInt(), any(UUID.class)
+                any(UUID.class), anyString(), anyInt()
         );
     }
 }

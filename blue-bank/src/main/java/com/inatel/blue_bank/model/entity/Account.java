@@ -26,7 +26,7 @@ public class Account {
     private UUID id;
 
     @Column(name = "account_number", length = 20, nullable = false, unique = true)
-    private Long accountNumber;
+    private String accountNumber;
 
     @Column(name = "balance", nullable = false)
     private BigDecimal balance;

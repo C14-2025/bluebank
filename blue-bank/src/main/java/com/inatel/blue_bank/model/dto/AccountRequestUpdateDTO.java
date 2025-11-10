@@ -3,9 +3,8 @@ package com.inatel.blue_bank.model.dto;
 import jakarta.validation.constraints.*;
 
 import java.math.BigDecimal;
-import java.util.UUID;
 
-public record AccountRequestDTO(
+public record AccountRequestUpdateDTO(
 
         @NotNull(message = "Account number is mandatory")
         @Pattern(regexp = "\\d{8,12}", message = "Account number must have between 8 and 12 digits")
@@ -18,8 +17,5 @@ public record AccountRequestDTO(
         @NotNull(message = "Branch code is mandatory")
         @Min(value = 1, message = "Branch code must be between 1 and 999")
         @Max(value = 999, message = "Branch code must be between 1 and 999")
-        Integer branchCode,
-
-        @NotNull(message = "Customer ID is mandatory")
-        UUID customerId
+        Integer branchCode
 ) {}

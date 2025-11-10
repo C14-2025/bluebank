@@ -2,10 +2,13 @@ package com.inatel.blue_bank.controller;
 
 import com.inatel.blue_bank.mapper.AccountMapper;
 import com.inatel.blue_bank.model.dto.AccountRequestDTO;
+import com.inatel.blue_bank.model.dto.AccountRequestUpdateDTO;
 import com.inatel.blue_bank.model.dto.AccountResponseDTO;
 import com.inatel.blue_bank.model.entity.Account;
+import com.inatel.blue_bank.model.entity.Customer;
 import com.inatel.blue_bank.model.entity.DocType;
 import com.inatel.blue_bank.service.AccountService;
+import com.inatel.blue_bank.service.CustomerService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -23,6 +26,7 @@ import java.util.UUID;
 public class AccountController implements GenericController {
 
     private final AccountService service;
+    private final CustomerService customerService;
     private final AccountMapper mapper;
 
     @PostMapping
@@ -67,7 +71,7 @@ public class AccountController implements GenericController {
     @GetMapping
     public ResponseEntity<Page<AccountResponseDTO>> search(
             @RequestParam(value = "account-number", required = false)
-            Long accountNumber,
+            String accountNumber,
             @RequestParam(value = "branch-code", required = false)
             Integer branchCode,
             @RequestParam(value = "created-at", required = false)
@@ -95,7 +99,7 @@ public class AccountController implements GenericController {
 
     @PutMapping("{id}")
     public ResponseEntity<Void> update(
-            @PathVariable("id") String id, @RequestBody @Valid AccountRequestDTO dto) {
+            @PathVariable("id") String id, @RequestBody @Valid AccountRequestUpdateDTO dto) {
 
         UUID accountId = UUID.fromString(id);
         Optional<Account> accountOptional = service.findById(accountId);

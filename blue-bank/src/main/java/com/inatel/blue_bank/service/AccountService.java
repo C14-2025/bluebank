@@ -40,7 +40,7 @@ public class AccountService {
         return repository.findByCustomerDocTypeAndCustomerDocNumber(docType, docNumber);
     }
 
-    public Page<Account> search(Long accountNumber,
+    public Page<Account> search(String accountNumber,
                                  Integer branchCode,
                                  LocalDateTime createdAt,
                                  LocalDateTime updatedAt,

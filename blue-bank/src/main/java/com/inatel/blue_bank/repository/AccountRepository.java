@@ -20,21 +20,19 @@ public interface AccountRepository extends JpaRepository<Account, UUID>, JpaSpec
     // For SAVE use
     boolean existsDuplicateByCustomerOrAccountNumberAndBranchCode(
             Customer customer,
-            Long accountNumber,
+            String accountNumber,
             Integer branchCode);
 
     // For UPDATE use
     @Query("""
         SELECT COUNT(a) > 0 FROM Account a
         WHERE a.id <> :id
-          AND ((a.accountNumber = :accountNumber AND a.branchCode = :branchCode)
-           OR a.customer.id = :customerId)
+          AND ((a.accountNumber = :accountNumber AND a.branchCode = :branchCode))
     """)
     boolean existsDuplicateForUpdate(
             @Param("id") UUID id,
-            @Param("accountNumber") Long accountNumber,
-            @Param("branchCode") Integer branchCode,
-            @Param("customerId") UUID customerId
+            @Param("accountNumber") String accountNumber,
+            @Param("branchCode") Integer branchCode
     );
 
 }

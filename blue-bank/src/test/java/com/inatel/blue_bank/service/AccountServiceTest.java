@@ -4,7 +4,6 @@ import com.inatel.blue_bank.model.entity.Account;
 import com.inatel.blue_bank.model.entity.Customer;
 import com.inatel.blue_bank.model.entity.DocType;
 import com.inatel.blue_bank.repository.AccountRepository;
-import com.inatel.blue_bank.repository.CustomerRepository;
 import com.inatel.blue_bank.validator.AccountValidator;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -12,15 +11,22 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.data.domain.*;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.*;
+import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
 
-import static org.assertj.core.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.*;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.*;
 
 /**
@@ -54,7 +60,7 @@ class AccountServiceTest {
 
         account = new Account();
         account.setId(UUID.randomUUID());
-        account.setAccountNumber(123456L);
+        account.setAccountNumber("123456");
         account.setBranchCode(1001);
         account.setBalance(BigDecimal.ZERO);
         account.setCustomer(customer);
@@ -69,7 +75,7 @@ class AccountServiceTest {
         Account saved = service.save(account);
 
         assertThat(saved).isNotNull();
-        assertThat(saved.getAccountNumber()).isEqualTo(123456L);
+        assertThat(saved.getAccountNumber()).isEqualTo("123456");
         verify(accountRepository, times(1)).save(account);
     }
 
@@ -134,7 +140,7 @@ class AccountServiceTest {
 
         assertThat(result).isNotNull();
         assertThat(result.getContent()).hasSize(1);
-        assertThat(result.getContent().get(0).getAccountNumber()).isEqualTo(123456L);
+        assertThat(result.getContent().get(0).getAccountNumber()).isEqualTo("123456");
 
         verify(accountRepository).findAll((Specification<Account>) any(), any(Pageable.class));
     }

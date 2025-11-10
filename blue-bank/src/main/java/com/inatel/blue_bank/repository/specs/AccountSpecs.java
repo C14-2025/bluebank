@@ -7,7 +7,7 @@ import java.time.LocalDateTime;
 
 public class AccountSpecs {
 
-    public static Specification<Account> accountNumberEqual(Long accountNumber) {
+    public static Specification<Account> accountNumberEqual(String accountNumber) {
         return (root, query, cb) -> cb.equal(root.get("accountNumber"), accountNumber);
     }
 

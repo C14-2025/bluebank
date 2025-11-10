@@ -1,5 +1,6 @@
 package com.inatel.blue_bank.validator;
 
+import com.inatel.blue_bank.exception.CustomerNotFoundException;
 import com.inatel.blue_bank.exception.DuplicateRegisterException;
 import com.inatel.blue_bank.model.entity.Account;
 import com.inatel.blue_bank.model.entity.Customer;
@@ -77,7 +78,7 @@ class AccountValidatorTest {
                 () -> validator.validate(account)
         );
 
-        assertEquals("Account already exists", ex.getMessage());
+        assertEquals("Account already exists OR customer already has an account", ex.getMessage());
         verify(repository).existsDuplicateByCustomerOrAccountNumberAndBranchCode(
                 any(Customer.class), anyString(), anyInt()
         );
@@ -115,10 +116,34 @@ class AccountValidatorTest {
                 () -> validator.validate(account)
         );
 
-        assertEquals("Another account already uses these details OR could not associate account with this customer", ex.getMessage());
+        assertEquals("Another account already uses these details", ex.getMessage());
         verify(repository).existsDuplicateForUpdate(
                 any(UUID.class), anyString(), anyInt()
         );
+    }
+
+    @Test
+    void shouldThrowExceptionWhenCustomerNotFoundOnCreate() {
+        // given
+        account.setId(null);
+        account.setCustomer(null);
+
+        // when / then
+        CustomerNotFoundException ex = assertThrows(
+                CustomerNotFoundException.class,
+                () -> validator.validate(account)
+        );
+
+        assertEquals("Provided customer does not exist", ex.getMessage());
+    }
+
+    @Test
+    void shouldNotThrowExceptionWhenCustomerNotFoundOnCreate() {
+        // given
+        account.setId(null);
+
+        // when / then
+        assertDoesNotThrow(() -> validator.validate(account));
     }
 }
 

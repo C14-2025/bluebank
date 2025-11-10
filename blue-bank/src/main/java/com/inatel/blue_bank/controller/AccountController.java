@@ -3,10 +3,7 @@ package com.inatel.blue_bank.controller;
 import com.inatel.blue_bank.mapper.AccountMapper;
 import com.inatel.blue_bank.model.dto.AccountRequestDTO;
 import com.inatel.blue_bank.model.dto.AccountResponseDTO;
-import com.inatel.blue_bank.model.dto.CustomerRequestDTO;
-import com.inatel.blue_bank.model.dto.CustomerResponseDTO;
 import com.inatel.blue_bank.model.entity.Account;
-import com.inatel.blue_bank.model.entity.Customer;
 import com.inatel.blue_bank.model.entity.DocType;
 import com.inatel.blue_bank.service.AccountService;
 import jakarta.validation.Valid;
@@ -16,7 +13,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Optional;
 import java.util.UUID;

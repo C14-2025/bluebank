@@ -81,18 +81,18 @@ class AccountValidatorTest {
     void shouldNotThrowExceptionWhenNoConflictOnUpdate() {
         // given
         account.setId(UUID.randomUUID());
-        when(repository.existsDuplicateByCustomerOrAccountNumberAndBranchCodeOrId(
-                any(Customer.class), anyLong(), anyInt(), any(UUID.class))
+        when(repository.existsDuplicateForUpdate(
+                any(UUID.class), anyLong(), anyInt(), any(UUID.class))
         ).thenReturn(false);
 
         // when / then
         assertDoesNotThrow(() -> validator.validate(account));
 
-        verify(repository).existsDuplicateByCustomerOrAccountNumberAndBranchCodeOrId(
-                eq(account.getCustomer()),
+        verify(repository).existsDuplicateForUpdate(
+                eq(account.getId()),
                 eq(account.getAccountNumber()),
                 eq(account.getBranchCode()),
-                eq(account.getId())
+                eq(account.getCustomer().getId())
         );
     }
 
@@ -100,8 +100,8 @@ class AccountValidatorTest {
     void shouldThrowExceptionWhenConflictOnUpdate() {
         // given
         account.setId(UUID.randomUUID());
-        when(repository.existsDuplicateByCustomerOrAccountNumberAndBranchCodeOrId(
-                any(Customer.class), anyLong(), anyInt(), any(UUID.class))
+        when(repository.existsDuplicateForUpdate(
+                any(UUID.class), anyLong(), anyInt(), any(UUID.class))
         ).thenReturn(true);
 
         // when / then
@@ -111,8 +111,8 @@ class AccountValidatorTest {
         );
 
         assertEquals("Another account already uses these details OR could not associate account with this customer", ex.getMessage());
-        verify(repository).existsDuplicateByCustomerOrAccountNumberAndBranchCodeOrId(
-                any(Customer.class), anyLong(), anyInt(), any(UUID.class)
+        verify(repository).existsDuplicateForUpdate(
+                any(UUID.class), anyLong(), anyInt(), any(UUID.class)
         );
     }
 }

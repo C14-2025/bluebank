@@ -26,11 +26,11 @@ public class AccountValidator {
             }
         } else {
             // Account update — ensure new data doesn't conflict with others
-            boolean conflict = repository.existsDuplicateForUpdate(
-                    account.getId(),
+            boolean conflict = repository.existsDuplicateByCustomerOrAccountNumberAndBranchCodeOrId(
+                    account.getCustomer(),
                     account.getAccountNumber(),
                     account.getBranchCode(),
-                    account.getCustomer().getId()
+                    account.getId()
             );
 
             if (conflict) {

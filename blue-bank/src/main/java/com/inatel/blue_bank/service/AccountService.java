@@ -84,10 +84,11 @@ public class AccountService {
                     "Account has balance greater than zero"
             );
         }
+        System.out.println("PASSOU!!!");
         repository.delete(account);
     }
 
     public boolean hasBalance(Account account) {
-        return BigDecimal.ZERO.compareTo(account.getBalance()) != 0;
+        return account.getBalance().compareTo(BigDecimal.ZERO) > 0;
     }
 }

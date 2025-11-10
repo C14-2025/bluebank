@@ -35,7 +35,7 @@ public class Account {
     private Integer branchCode;
 
     @OneToOne
-    @JoinColumn(name = "customer_id", referencedColumnName = "id")
+    @JoinColumn(name = "customer_id", referencedColumnName = "id", nullable = false)
     private Customer customer;
 
     @OneToMany(mappedBy = "account")

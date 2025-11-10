@@ -2,6 +2,7 @@ package com.inatel.blue_bank.service;
 
 import com.inatel.blue_bank.exception.DeniedOperationException;
 import com.inatel.blue_bank.model.entity.Account;
+import com.inatel.blue_bank.model.entity.Customer;
 import com.inatel.blue_bank.model.entity.DocType;
 import com.inatel.blue_bank.repository.AccountRepository;
 import com.inatel.blue_bank.validator.AccountValidator;
@@ -84,7 +85,8 @@ public class AccountService {
                     "Account has balance greater than zero"
             );
         }
-        System.out.println("PASSOU!!!");
+        Customer customer = account.getCustomer();
+        customer.setAccount(null);
         repository.delete(account);
     }
 

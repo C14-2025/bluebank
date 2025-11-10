@@ -114,19 +114,17 @@ public class AccountController implements GenericController {
         return ResponseEntity.noContent().build();
     }
 
-    // TO FIX
-//    @DeleteMapping("{id}")
-//    public ResponseEntity<Void> delete(@PathVariable("id") String id) {
-//        UUID accountId = UUID.fromString(id);
-//        Optional<Account> accountOptional = service.findById(accountId);
-//
-//        if(accountOptional.isEmpty()) {
-//            return ResponseEntity.notFound().build();
-//        }
-//
-//        service.delete(accountOptional.get());
-//
-//        return ResponseEntity.noContent().build();
-//    }
+    @DeleteMapping("{id}")
+    public ResponseEntity<Void> delete(@PathVariable("id") String id) {
+        UUID accountId = UUID.fromString(id);
+        Optional<Account> accountOptional = service.findById(accountId);
 
+        if(accountOptional.isEmpty()) {
+            return ResponseEntity.notFound().build();
+        }
+
+        service.delete(accountOptional.get());
+
+        return ResponseEntity.noContent().build();
+    }
 }

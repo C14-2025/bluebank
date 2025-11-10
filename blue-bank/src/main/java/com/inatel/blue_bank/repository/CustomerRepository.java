@@ -16,7 +16,7 @@ public interface CustomerRepository extends JpaRepository<Customer, UUID>,
         CustomerRepositoryCustom {
 
     @Query("""
-    SELECT new com.inatel.blue_bank.model.Customer(
+    SELECT new com.inatel.blue_bank.model.entity.Customer(
         c.id, c.fullName, c.dob, c.nationality, c.phone,
         c.email, c.occupation, c.docType, c.docNumber,
         c.createdAt, c.updatedAt
@@ -58,7 +58,7 @@ public interface CustomerRepository extends JpaRepository<Customer, UUID>,
     );
 
     @Query("""
-    SELECT new com.inatel.blue_bank.model.Customer(
+    SELECT new com.inatel.blue_bank.model.entity.Customer(
         c.id, c.fullName, c.dob, c.nationality, c.phone,
         c.email, c.occupation, c.docType, c.docNumber,
         c.createdAt, c.updatedAt

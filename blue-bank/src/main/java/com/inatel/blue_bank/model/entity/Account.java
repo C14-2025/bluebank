@@ -41,8 +41,11 @@ public class Account {
     @OneToMany(mappedBy = "account")
     private List<Card> cards;
 
-//    @OneToMany(mappedBy = "account")
-//    private List<Investment> investments;
+    @OneToMany(mappedBy = "payer")
+    private List<Transaction> sentTransactions;
+
+    @OneToMany(mappedBy = "payee")
+    private List<Transaction> receivedTransactions;
 
     @CreatedDate
     @Column(name = "created_at", nullable = false)

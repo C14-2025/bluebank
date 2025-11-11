@@ -79,6 +79,16 @@ public class AccountService {
         repository.save(account);
     }
 
+    public void debit(Account account, BigDecimal amount) {
+        account.setBalance(account.getBalance().subtract(amount));
+        repository.save(account);
+    }
+
+    public void credit(Account account, BigDecimal amount) {
+        account.setBalance(account.getBalance().add(amount));
+        repository.save(account);
+    }
+
     public void delete(Account account) {
         if(hasBalance(account)){
             throw new DeniedOperationException(

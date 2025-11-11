@@ -1,5 +1,6 @@
 package com.inatel.blue_bank.service;
 
+import com.inatel.blue_bank.model.entity.Account;
 import com.inatel.blue_bank.model.entity.Transaction;
 import com.inatel.blue_bank.repository.TransactionRepository;
 import lombok.RequiredArgsConstructor;
@@ -8,7 +9,9 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.Optional;
 import java.util.UUID;
@@ -20,9 +23,20 @@ import static com.inatel.blue_bank.repository.specs.TransactionSpecs.*;
 public class TransactionService {
 
     private final TransactionRepository repository;
+    private final AccountService accountService;
 
+    @Transactional // Ensures rollback in case anything goes wrong
     public Transaction save(Transaction transaction) {
+
+        Account payer = transaction.getPayer();
+        Account payee = transaction.getPayee();
+        BigDecimal amount = transaction.getAmount();
+
         // Validate
+
+        accountService.debit(payer, amount);
+        accountService.credit(payee, amount);
+
         return repository.save(transaction);
     }
 

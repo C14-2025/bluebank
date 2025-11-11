@@ -49,7 +49,6 @@ public class TransactionService {
             specs = specs.and(payeeAccountNumberEqual(payeeAccountNumber));
         }
 
-
         if (payerFullName != null) {
             specs = specs.and(payerFullNameLike(payerFullName));
         }

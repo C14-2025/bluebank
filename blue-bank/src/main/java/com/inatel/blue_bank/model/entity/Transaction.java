@@ -1,6 +1,8 @@
 package com.inatel.blue_bank.model.entity;
 
 import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.Setter;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
@@ -10,6 +12,8 @@ import java.util.UUID;
 
 @Entity
 @Table(name = "transactions")
+@Setter
+@Getter
 @EntityListeners(AuditingEntityListener.class)
 public class Transaction {
 

@@ -1,7 +1,6 @@
 package com.inatel.blue_bank.service;
 
 import com.inatel.blue_bank.model.entity.Transaction;
-import com.inatel.blue_bank.model.entity.TransactionType;
 import com.inatel.blue_bank.repository.TransactionRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -31,8 +30,7 @@ public class TransactionService {
         return repository.findById(id);
     }
 
-    public Page<Transaction> search(TransactionType type,
-                                    String payerAccountNumber,
+    public Page<Transaction> search(String payerAccountNumber,
                                     String payeeAccountNumber,
                                     String payerFullName,
                                     String payeeFullName,
@@ -42,10 +40,6 @@ public class TransactionService {
     {
 
         Specification<Transaction> specs = ((root, query, cb) -> cb.conjunction() );
-
-        if (type != null) {
-            specs = specs.and(typeEqual(type));
-        }
 
         if (payerAccountNumber != null) {
             specs = specs.and(payerAccountNumberEqual(payerAccountNumber));

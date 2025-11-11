@@ -26,9 +26,7 @@ CREATE TABLE accounts(
 CREATE TABLE transactions(
 	id UUID NOT NULL PRIMARY KEY,
 	amount NUMERIC(18,2) NOT NULL,
-	type VARCHAR(15) NOT NULL,
 	payer_id UUID NOT NULL REFERENCES accounts(id),
 	payee_id UUID NOT NULL REFERENCES accounts(id),
-	created_at TIMESTAMP NOT NULL,
-	CONSTRAINT type_chk CHECK (type in ('CREDIT', 'DEBIT'))
+	created_at TIMESTAMP NOT NULL
 );

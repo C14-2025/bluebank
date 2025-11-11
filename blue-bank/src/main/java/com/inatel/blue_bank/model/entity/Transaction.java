@@ -24,10 +24,6 @@ public class Transaction {
     @Column(nullable = false)
     private BigDecimal amount;
 
-    @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
-    private TransactionType type;
-
     @ManyToOne
     @JoinColumn(name = "payer_id")
     private Account payer;

@@ -1,6 +1,6 @@
 package com.inatel.blue_bank.validator;
 
-import com.inatel.blue_bank.exception.CustomerNotFoundException;
+import com.inatel.blue_bank.exception.EntityNotFoundException;
 import com.inatel.blue_bank.exception.DuplicateRegisterException;
 import com.inatel.blue_bank.model.entity.Account;
 import com.inatel.blue_bank.repository.AccountRepository;
@@ -18,7 +18,7 @@ public class AccountValidator {
         // This needs to be checked, because if mapper isn't able to find any customer,
         // it's going to set it to null.
         if (account.getCustomer() == null) {
-            throw new CustomerNotFoundException("Provided customer does not exist");
+            throw new EntityNotFoundException("Provided customer does not exist");
         }
 
         if (account.getId() == null) {

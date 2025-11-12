@@ -1,6 +1,6 @@
 package com.inatel.blue_bank.validator;
 
-import com.inatel.blue_bank.exception.CustomerNotFoundException;
+import com.inatel.blue_bank.exception.EntityNotFoundException;
 import com.inatel.blue_bank.exception.DuplicateRegisterException;
 import com.inatel.blue_bank.model.entity.Account;
 import com.inatel.blue_bank.model.entity.Customer;
@@ -129,8 +129,8 @@ class AccountValidatorTest {
         account.setCustomer(null);
 
         // when / then
-        CustomerNotFoundException ex = assertThrows(
-                CustomerNotFoundException.class,
+        EntityNotFoundException ex = assertThrows(
+                EntityNotFoundException.class,
                 () -> validator.validate(account)
         );
 

@@ -3,6 +3,7 @@ package com.inatel.blue_bank.service;
 import com.inatel.blue_bank.model.entity.Account;
 import com.inatel.blue_bank.model.entity.Transaction;
 import com.inatel.blue_bank.repository.TransactionRepository;
+import com.inatel.blue_bank.validator.TransactionValidator;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -24,6 +25,7 @@ public class TransactionService {
 
     private final TransactionRepository repository;
     private final AccountService accountService;
+    private final TransactionValidator validator;
 
     @Transactional // Ensures rollback in case anything goes wrong
     public Transaction save(Transaction transaction) {
@@ -32,7 +34,7 @@ public class TransactionService {
         Account payee = transaction.getPayee();
         BigDecimal amount = transaction.getAmount();
 
-        // Validate
+        validator.validate(transaction);
 
         accountService.debit(payer, amount);
         accountService.credit(payee, amount);

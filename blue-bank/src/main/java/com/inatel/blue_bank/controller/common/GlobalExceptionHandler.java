@@ -1,6 +1,6 @@
 package com.inatel.blue_bank.controller.common;
 
-import com.inatel.blue_bank.exception.CustomerNotFoundException;
+import com.inatel.blue_bank.exception.EntityNotFoundException;
 import com.inatel.blue_bank.exception.DeniedOperationException;
 import com.inatel.blue_bank.exception.DuplicateRegisterException;
 import com.inatel.blue_bank.model.dto.ErrorField;
@@ -57,9 +57,9 @@ public class GlobalExceptionHandler {
         );
     }
 
-    @ExceptionHandler(CustomerNotFoundException.class)
+    @ExceptionHandler(EntityNotFoundException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public ErrorResponse handleCustomerNotFoundException(CustomerNotFoundException e) {
+    public ErrorResponse handleEntityNotFoundException(EntityNotFoundException e) {
         return new ErrorResponse(
                 HttpStatus.BAD_REQUEST.value(), e.getMessage(), List.of()
         );
@@ -67,7 +67,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(DeniedOperationException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public ErrorResponse handleCustomerNotFoundException(DeniedOperationException e) {
+    public ErrorResponse handleDeniedOperationException(DeniedOperationException e) {
         return new ErrorResponse(
                 HttpStatus.BAD_REQUEST.value(), e.getMessage(), List.of()
         );

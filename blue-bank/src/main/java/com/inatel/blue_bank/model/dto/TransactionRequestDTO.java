@@ -4,7 +4,6 @@ import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.NotNull;
 
 import java.math.BigDecimal;
-import java.util.UUID;
 
 public record TransactionRequestDTO(
 
@@ -13,8 +12,8 @@ public record TransactionRequestDTO(
         BigDecimal amount,
 
         @NotNull(message = "Mandatory field")
-        UUID payerEmail,
+        String payerEmail,
 
         @NotNull(message = "Mandatory field")
-        UUID payeeEmail
+        String payeeEmail
 ) {}

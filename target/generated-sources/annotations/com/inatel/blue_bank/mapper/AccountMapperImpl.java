@@ -1,6 +1,6 @@
 package com.inatel.blue_bank.mapper;
 
-import com.inatel.blue_bank.model.dto.AccountRequestDTO;
+import com.inatel.blue_bank.model.dto.AccountRequestSaveDTO;
 import com.inatel.blue_bank.model.dto.AccountResponseDTO;
 import com.inatel.blue_bank.model.dto.CustomerResponseDTO;
 import com.inatel.blue_bank.model.entity.Account;
@@ -13,7 +13,7 @@ import org.springframework.stereotype.Component;
 
 @Generated(
     value = "org.mapstruct.ap.MappingProcessor",
-    date = "2025-11-10T13:22:38-0300",
+    date = "2025-11-12T02:33:34-0300",
     comments = "version: 1.6.3, compiler: javac, environment: Java 23.0.2 (Oracle Corporation)"
 )
 @Component
@@ -23,7 +23,7 @@ public class AccountMapperImpl extends AccountMapper {
     private CustomerMapper customerMapper;
 
     @Override
-    public Account toEntity(AccountRequestDTO dto) {
+    public Account toEntity(AccountRequestSaveDTO dto) {
         if ( dto == null ) {
             return null;
         }
@@ -34,7 +34,7 @@ public class AccountMapperImpl extends AccountMapper {
         account.setBalance( dto.balance() );
         account.setBranchCode( dto.branchCode() );
 
-        account.setCustomer( customerRepository.findById(dto.customerId()).orElse(null) );
+        account.setCustomer( customerService.findById(dto.customerId()).orElse(null) );
 
         return account;
     }

@@ -1,9 +1,10 @@
 package com.inatel.blue_bank.mapper;
 
-import com.inatel.blue_bank.model.dto.AccountRequestDTO;
+import com.inatel.blue_bank.model.dto.AccountRequestSaveDTO;
 import com.inatel.blue_bank.model.dto.AccountResponseDTO;
 import com.inatel.blue_bank.model.entity.Account;
 import com.inatel.blue_bank.repository.CustomerRepository;
+import com.inatel.blue_bank.service.CustomerService;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,10 +13,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 public abstract class AccountMapper {
 
     @Autowired
-    CustomerRepository customerRepository;
+    CustomerService customerService;
 
-    @Mapping(target = "customer", expression = "java( customerRepository.findById(dto.customerId()).orElse(null))")
-    public abstract Account toEntity(AccountRequestDTO dto);
+    @Mapping(target = "customer", expression = "java( customerService.findById(dto.customerId()).orElse(null))")
+    public abstract Account toEntity(AccountRequestSaveDTO dto);
 
     public abstract AccountResponseDTO toResponseDTO(Account account);
 }

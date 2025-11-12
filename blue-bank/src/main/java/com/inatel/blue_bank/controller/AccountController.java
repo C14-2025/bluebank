@@ -1,11 +1,10 @@
 package com.inatel.blue_bank.controller;
 
 import com.inatel.blue_bank.mapper.AccountMapper;
-import com.inatel.blue_bank.model.dto.AccountRequestDTO;
+import com.inatel.blue_bank.model.dto.AccountRequestSaveDTO;
 import com.inatel.blue_bank.model.dto.AccountRequestUpdateDTO;
 import com.inatel.blue_bank.model.dto.AccountResponseDTO;
 import com.inatel.blue_bank.model.entity.Account;
-import com.inatel.blue_bank.model.entity.Customer;
 import com.inatel.blue_bank.model.entity.DocType;
 import com.inatel.blue_bank.service.AccountService;
 import com.inatel.blue_bank.service.CustomerService;
@@ -30,7 +29,7 @@ public class AccountController implements GenericController {
     private final AccountMapper mapper;
 
     @PostMapping
-    public ResponseEntity<Void> save(@RequestBody @Valid AccountRequestDTO dto) {
+    public ResponseEntity<Void> save(@RequestBody @Valid AccountRequestSaveDTO dto) {
         Account account = mapper.toEntity(dto);
         service.save(account);
         URI location = generateHeaderLocation(account.getId());

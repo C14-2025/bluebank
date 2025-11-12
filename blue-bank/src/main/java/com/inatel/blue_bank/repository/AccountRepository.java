@@ -35,4 +35,5 @@ public interface AccountRepository extends JpaRepository<Account, UUID>, JpaSpec
             @Param("branchCode") Integer branchCode
     );
 
+    Optional<Account> findByCustomerEmail(String email);
 }

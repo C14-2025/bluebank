@@ -26,5 +26,6 @@ public class TransactionValidator {
         if (payerBalance.compareTo(transaction.getAmount()) < 0) {
             throw new DeniedOperationException("Payer has insufficient funds");
         }
+
     }
 }

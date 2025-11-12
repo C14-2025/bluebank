@@ -40,6 +40,10 @@ public class AccountService {
         return repository.findByCustomerDocTypeAndCustomerDocNumber(docType, docNumber);
     }
 
+    public Optional<Account> findByCustomerEmail(String email) {
+        return repository.findByCustomerEmail(email);
+    }
+
     public Page<Account> search(String accountNumber,
                                  Integer branchCode,
                                  LocalDateTime createdAt,

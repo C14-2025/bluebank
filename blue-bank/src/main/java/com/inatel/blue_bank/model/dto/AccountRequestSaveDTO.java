@@ -5,7 +5,7 @@ import jakarta.validation.constraints.*;
 import java.math.BigDecimal;
 import java.util.UUID;
 
-public record AccountRequestDTO(
+public record AccountRequestSaveDTO(
 
         @NotNull(message = "Account number is mandatory")
         @Pattern(regexp = "\\d{8,12}", message = "Account number must have between 8 and 12 digits")

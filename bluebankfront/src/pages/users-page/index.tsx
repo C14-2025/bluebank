@@ -1,40 +1,43 @@
 
-import { useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router";
 import { Pencil } from "lucide-react";
 import { Trash } from "lucide-react"
-
-
-const users = [
-  { id: 1, name: "Ana Souza", email: "ana.souza@email.com" },
-  { id: 2, name: "Carlos Silva", email: "carlos.silva@email.com" },
-  { id: 3, name: "Mariana Lima", email: "mariana.lima@email.com" },
-  { id: 4, name: "João Pereira", email: "joao.pereira@email.com" },
-  { id: 5, name: "Lucas Alves", email: "lucas.alves@email.com" },
-  { id: 6, name: "Fernanda Costa", email: "fernanda.costa@email.com" },
-  { id: 7, name: "Pedro Ramos", email: "pedro.ramos@email.com" },
-  { id: 8, name: "Juliana Torres", email: "juliana.torres@email.com" },
-];
+import type { Customer } from "@/types/customer";
+import { getCustomersList } from "@/services/get-customers-service";
 
 const USERS_PER_PAGE = 4;
 
 export function UsersPage() {
-  const [page, setPage] = useState(1);
+  const [page, setPage] = useState(0);
+  const [users, setUsers] = useState<Customer[]>([]);
+
   const totalPages = Math.ceil(users.length / USERS_PER_PAGE);
-  const paginatedUsers = users.slice((page - 1) * USERS_PER_PAGE, page * USERS_PER_PAGE);
+  const paginatedUsers = useMemo(() => {
+    return users.slice((page - 1) * USERS_PER_PAGE, page * USERS_PER_PAGE);
+  }, [page, users]);
   const navigate = useNavigate();
   
   function handlePrev() {
-    setPage((p) => Math.max(1, p - 1));
+    if(page > 0) setPage(page - 1);
   }
+
   function handleNext() {
-    setPage((p) => Math.min(totalPages, p + 1));
+    setPage(page + 1);
   }
   
   function handleRegister() {
     navigate('/register');
   }
 
+  useEffect(() => {
+    async function fetchUsers() {
+      const response = await getCustomersList(page);
+      setUsers(response);
+    }
+    fetchUsers();
+  }, [page]);
+  
   return (
     <div className="max-w-md mx-auto mt-10 p-6 bg-white rounded-xl shadow-lg">
       <h2 className="text-center text-2xl font-bold mb-6">Lista de Usuários</h2>
@@ -51,7 +54,7 @@ export function UsersPage() {
             className="p-4 bg-gray-100 rounded-lg shadow flex cursor-pointer font-semibold transition-all duration-200 hover:scale-105"
           >
             <div className="flex flex-col grow ">
-              <span className="font-semibold text-lg">{user.name}</span>
+              <span className="font-semibold text-lg">{user.fullName}</span>
               <span className="text-gray-600 text-sm">{user.email}</span>
             </div>
             <div className="flex items-center gap-2">

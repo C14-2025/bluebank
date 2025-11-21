@@ -1,25 +1,25 @@
 pipeline {
-    agent any  // Roda em qualquer máquina (o Jenkins local)
+    agent any
 
     tools {
-        jdk 'JDK21'  // Usa o JDK que configuramos
-        maven 'Maven3'  // Para backend
-        nodejs 'Node18'  // Para frontend
+        jdk 'JDK21'
+        maven 'Maven3'
+        nodejs 'Node20'
     }
 
     stages {
         stage('Checkout') {
             steps {
                 echo 'Baixando código do GitHub...'
-                checkout scm  // Puxa do repo
+                checkout scm
             }
         }
 
         stage('Build Backend') {
             steps {
                 echo 'Buildando Backend (Spring Boot)...'
-                dir('apibluebank/blue-bank') {  // Entra na pasta do backend
-                    sh 'mvn clean compile'  // Ou ./mvnw se preferir o wrapper
+                dir('apibluebank/blue-bank') {
+                    sh 'mvn clean compile'
                 }
             }
         }
@@ -33,7 +33,7 @@ pipeline {
             }
             post {
                 always {
-                    junit 'apibluebank/blue-bank/target/surefire-reports/*.xml'  // Relatórios de testes
+                    junit 'apibluebank/blue-bank/target/surefire-reports/*.xml'
                 }
             }
         }
@@ -47,7 +47,7 @@ pipeline {
             }
             post {
                 success {
-                    archiveArtifacts artifacts: 'apibluebank/blue-bank/target/*.jar'  // Salva o JAR
+                    archiveArtifacts artifacts: 'apibluebank/blue-bank/target/*.jar'
                 }
             }
         }
@@ -55,9 +55,9 @@ pipeline {
         stage('Build Frontend') {
             steps {
                 echo 'Buildando Frontend (React/Vite)...'
-                dir('frontbluebank/bluebankfront') {  // Entra na pasta do frontend
-                    sh 'npm install'  // Instala dependências
-                    sh 'npm run build'  // Builda para produção
+                dir('frontbluebank/bluebankfront') {
+                    sh 'npm install'
+                    sh 'npm run build'
                 }
             }
         }
@@ -66,7 +66,7 @@ pipeline {
             steps {
                 echo 'Testando Frontend (se tiver testes)...'
                 dir('frontbluebank/bluebankfront') {
-                    sh 'npm test'  // Se você tiver testes configurados
+                    sh 'npm test'
                 }
             }
         }
@@ -75,7 +75,7 @@ pipeline {
     post {
         always {
             echo 'Pipeline finalizada!'
-            cleanWs()  // Limpa workspace
+            cleanWs()
         }
         success {
             echo 'Tudo verde! Projeto buildado com sucesso.'

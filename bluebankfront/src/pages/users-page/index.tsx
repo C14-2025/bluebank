@@ -1,21 +1,54 @@
-
 import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router";
 import { Pencil } from "lucide-react";
 import { Trash } from "lucide-react"
 import type { Customer } from "@/types/customer";
-import { getCustomersList } from "@/services/get-customers-service";
+import { getCustomersList, getCustomersListByDoc, searchCustomers } from "@/services/get-customers-service";
+import { Funnel } from "lucide-react";
+import { Menu, MenuItem } from "@mui/material";
 
-const USERS_PER_PAGE = 4;
+// server handles page size; no client-side slicing
 
 export function UsersPage() {
   const [page, setPage] = useState(0);
   const [users, setUsers] = useState<Customer[]>([]);
+  const [totalPages, setTotalPages] = useState(10);
+  const [userNameFilter, setUserNameFilter] = useState("");
+  const [userDocFilter, setUserDocFilter] = useState("");
+  const [userDocTypeFilter, setUserDocTypeFilter] = useState("");
+  const [dobFilter, setDobFilter] = useState("");
+  const [nationalityFilter, setNationalityFilter] = useState("");
+  const [occupationFilter, setOccupationFilter] = useState("");
+  const [createdAtFilter, setCreatedAtFilter] = useState("");
+  const [updatedAtFilter, setUpdatedAtFilter] = useState("");
+  const [pageSizeFilter, setPageSizeFilter] = useState("");
+  const [currentSearchParams, setCurrentSearchParams] = useState<Record<string, string | number | undefined>>({});
+  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
 
-  const totalPages = Math.ceil(users.length / USERS_PER_PAGE);
-  const paginatedUsers = useMemo(() => {
-    return users.slice((page - 1) * USERS_PER_PAGE, page * USERS_PER_PAGE);
-  }, [page, users]);
+  const menuAberto = Boolean(anchorEl);
+
+  function handleClick(event: React.MouseEvent<HTMLElement>) {
+    setAnchorEl(event.currentTarget);
+  };
+
+  function handleKeyDown(event: React.KeyboardEvent<HTMLInputElement>){
+    if (event.key === "Enter") {
+      event.preventDefault();
+      handleApplyFilters({
+        'doc-type': userDocTypeFilter,
+        'doc-number': userDocFilter,
+      });
+    }
+  };
+
+  function handleDocTypeChange(e: React.ChangeEvent<HTMLSelectElement>) {
+    setUserDocTypeFilter(e.target.value);
+  }
+
+  function handleClose() {
+    setAnchorEl(null);
+  };
+  const paginatedUsers = users;
   const navigate = useNavigate();
   
   function handlePrev() {
@@ -23,35 +56,194 @@ export function UsersPage() {
   }
 
   function handleNext() {
-    setPage(page + 1);
+    if (page < totalPages - 1) setPage(page + 1);
   }
   
   function handleRegister() {
     navigate('/register');
   }
 
+  function handleApplyFilters(overrides: Record<string, string | number | undefined> = {}) {
+    const params: Record<string, string | number | undefined> = {
+      dob: dobFilter || undefined,
+      nationality: nationalityFilter || undefined,
+      occupation: occupationFilter || undefined,
+      createdAt: createdAtFilter || undefined,
+      updatedAt: updatedAtFilter || undefined,
+      pageSize: pageSizeFilter ? Number(pageSizeFilter) : undefined,
+      'doc-type': userDocTypeFilter || undefined,
+      'doc-number': userDocFilter || undefined,
+    };
+
+    const merged = { ...params, ...overrides };
+    setCurrentSearchParams(merged);
+    setPage(0);
+    setAnchorEl(null);
+  }
+
   useEffect(() => {
     async function fetchUsers() {
-      const response = await getCustomersList(page);
-      setUsers(response);
+      try {
+        if (currentSearchParams && Object.keys(currentSearchParams).length > 0) {
+          const keys = Object.keys(currentSearchParams).filter(k => currentSearchParams[k] !== undefined && String(currentSearchParams[k]).trim() !== "");
+          const hasDocType = keys.includes('doc-type');
+          const hasDocNumber = keys.includes('doc-number');
+
+          if (hasDocType && hasDocNumber && keys.length === 2) {
+            const docType = String(currentSearchParams['doc-type']);
+            const docNumber = String(currentSearchParams['doc-number']);
+            const resp = await getCustomersListByDoc(docNumber, docType);
+            setUsers(resp.content);
+            setTotalPages(resp.totalPages ?? (resp.content ? 1 : 0));
+          } else {
+            const resp = await searchCustomers({ ...currentSearchParams, page });
+            setUsers(resp.content);
+            setTotalPages(resp.totalPages);
+          }
+        } else {
+          const response = await getCustomersList(page);
+          setUsers(response.content);
+          setTotalPages(response.totalPages);
+        }
+      } catch (err) {
+        setUsers([]);
+        setTotalPages(0);
+      }
     }
     fetchUsers();
-  }, [page]);
-  
+  }, [page, currentSearchParams]);
+
+  const filteredUsers = useMemo(() => {
+    if (!userNameFilter) return paginatedUsers;
+    return paginatedUsers.filter(user =>
+      user.fullName.toLowerCase().includes(userNameFilter.toLowerCase())
+    );
+  }, [userNameFilter, paginatedUsers]);
+
   return (
     <div className="max-w-md mx-auto mt-10 p-6 bg-white rounded-xl shadow-lg">
       <h2 className="text-center text-2xl font-bold mb-6">Lista de Usuários</h2>
-      <button
-        className="w-full mb-6 py-2 px-4 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition cursor-pointer font-semibold"
-        onClick={handleRegister}
-      >
-        Cadastrar Novo Usuário
-      </button>
+      <div className="flex mb-4 flex-row gap-2 items-center justify-center">
+        <button
+        className="cursor-pointer"
+        onClick={handleClick}
+        >
+          <Funnel />
+        </button>
+        <Menu
+          anchorEl={anchorEl}
+          open={menuAberto}
+          onClose={handleClose}
+          anchorOrigin={{ vertical: 'bottom', horizontal: 'left' }}
+          transformOrigin={{ vertical: 'top', horizontal: 'right' }}
+        >
+          <MenuItem>
+            <input
+              className="mb-4 w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              placeholder="Filtrar por nome"
+              type="text"
+              value={userNameFilter}
+              onChange={(e) => setUserNameFilter(e.target.value)}
+            />
+          </MenuItem>
+
+          <MenuItem>
+            <div className="flex flex-row gap-2 w-full">
+              <div className="w-1/3">
+                <label className="block text-sm text-gray-700 font-semibold">Tipo de documento</label>
+                <select
+                  className="mb-4 w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  value={userDocTypeFilter}
+                  onChange={handleDocTypeChange}
+                >
+                  <option value="">Selecione</option>
+                  <option value="CPF">CPF</option>
+                  <option value="RG">RG</option>
+                  <option value="Passaporte">Passaporte</option>
+                </select>
+              </div>
+              <div className="flex-1">
+                <label className="block text-sm text-gray-700 font-semibold">Número do documento</label>
+                <input
+                  className="mb-4 w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  type="text"
+                  value={userDocFilter}
+                  onChange={(e) => setUserDocFilter(e.target.value)}
+                  onKeyDown={handleKeyDown}
+                  placeholder="Filtrar por documento"
+                />
+              </div>
+            </div>
+          </MenuItem>
+
+          <MenuItem>
+            <div className="grid grid-cols-2 gap-2 w-80">
+              <div>
+                <label className="block text-sm text-gray-700">Data de Nasc</label>
+                <input type="date" value={dobFilter} onChange={(e) => setDobFilter(e.target.value)} className="w-full px-2 py-1 border rounded" />
+              </div>
+              <div>
+                <label className="block text-sm text-gray-700">Nacionalidade</label>
+                <input type="text" value={nationalityFilter} onChange={(e) => setNationalityFilter(e.target.value)} className="w-full px-2 py-1 border rounded" />
+              </div>
+              <div>
+                <label className="block text-sm text-gray-700">Ocupação</label>
+                <input type="text" value={occupationFilter} onChange={(e) => setOccupationFilter(e.target.value)} className="w-full px-2 py-1 border rounded" />
+              </div>
+              <div>
+                <label className="block text-sm text-gray-700">Criado em</label>
+                <input type="date" value={createdAtFilter} onChange={(e) => setCreatedAtFilter(e.target.value)} className="w-full px-2 py-1 border rounded" />
+              </div>
+              <div>
+                <label className="block text-sm text-gray-700">Atualizado em</label>
+                <input type="date" value={updatedAtFilter} onChange={(e) => setUpdatedAtFilter(e.target.value)} className="w-full px-2 py-1 border rounded" />
+              </div>
+              <div>
+                <label className="block text-sm text-gray-700">Tamanho da página</label>
+                <input type="number" min={1} value={pageSizeFilter} onChange={(e) => setPageSizeFilter(e.target.value)} className="w-full px-2 py-1 border rounded" />
+              </div>
+            </div>
+          </MenuItem>
+
+          <MenuItem className="flex gap-2">
+            <button
+              className="px-3 py-1 bg-blue-600 text-white rounded hover:bg-blue-700"
+              onClick={() => handleApplyFilters()}
+            >
+              Aplicar filtros
+            </button>
+            <button
+              className="px-3 py-1 bg-gray-200 rounded hover:bg-gray-300"
+              onClick={() => {
+                setUserDocFilter("");
+                setUserDocTypeFilter("");
+                setDobFilter("");
+                setNationalityFilter("");
+                setOccupationFilter("");
+                setCreatedAtFilter("");
+                setUpdatedAtFilter("");
+                setPageSizeFilter("");
+                setCurrentSearchParams({});
+                setAnchorEl(null);
+              }}
+            >
+              Limpar
+            </button>
+          </MenuItem>
+        </Menu>
+        <button
+          className="w-full py-2 px-4 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition cursor-pointer font-semibold"
+          onClick={handleRegister}
+          >
+          Cadastrar Novo Usuário
+        </button>
+      </div>
       <ul className="space-y-4">
-        {paginatedUsers.map((user) => (
+        {filteredUsers.map((user) => (
           <li
             key={user.id}
             className="p-4 bg-gray-100 rounded-lg shadow flex cursor-pointer font-semibold transition-all duration-200 hover:scale-105"
+            onClick={() => navigate(`/users/${user.id}`)}
           >
             <div className="flex flex-col grow ">
               <span className="font-semibold text-lg">{user.fullName}</span>
@@ -72,17 +264,17 @@ export function UsersPage() {
         <button
           className="px-3 py-1 bg-gray-300 rounded hover:bg-gray-400 disabled:opacity-50"
           onClick={handlePrev}
-          disabled={page === 1}
+          disabled={page === 0}
         >
           Anterior
         </button>
         <span className="text-sm text-gray-700">
-          Página {page} de {totalPages}
+          Página {page + 1} de {totalPages || 1}
         </span>
         <button
           className="px-3 py-1 bg-gray-300 rounded hover:bg-gray-400 disabled:opacity-50"
           onClick={handleNext}
-          disabled={page === totalPages}
+          disabled={totalPages === 0 || page === totalPages - 1}
         >
           Próxima
         </button>

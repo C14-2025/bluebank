@@ -55,7 +55,7 @@ pipeline {
         stage('Build Frontend') {
             steps {
                 echo 'Buildando Frontend (React/Vite)...'
-                dir('frontbluebank/bluebankfront') {
+                dir('bluebankfront') {
                     sh 'npm install'
                     sh 'npm run build'
                 }
@@ -65,7 +65,7 @@ pipeline {
         stage('Test Frontend') {
             steps {
                 echo 'Testando Frontend (se tiver testes)...'
-                dir('frontbluebank/bluebankfront') {
+                dir('bluebankfront') {
                     sh 'npm test'
                 }
             }

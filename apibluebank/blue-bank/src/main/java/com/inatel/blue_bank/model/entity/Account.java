@@ -38,9 +38,6 @@ public class Account {
     @JoinColumn(name = "customer_id", referencedColumnName = "id", nullable = false)
     private Customer customer;
 
-    @OneToMany(mappedBy = "account")
-    private List<Card> cards;
-
     @OneToMany(mappedBy = "payer")
     private List<Transaction> sentTransactions;
 

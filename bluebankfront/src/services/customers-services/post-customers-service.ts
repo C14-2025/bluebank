@@ -25,8 +25,9 @@ export async function createCustomer(
 		const res = await api(`/customers`, requestInit);
 
 		return res.ok;
-	} catch (err: any) {
-		alert("Erro ao registrar: " + (err?.message || "Erro desconhecido"));
+	} catch (err: unknown) {
+		const msg = err instanceof Error ? err.message : String(err);
+		alert("Erro ao registrar: " + (msg || "Erro desconhecido"));
 		return false;
 	}
 }

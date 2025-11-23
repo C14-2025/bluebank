@@ -4,6 +4,7 @@ export interface Customer {
 	dob: string;
 	nationality: string;
 	phone: string;
+	countryCode: string;
 	email: string;
 	occupation: string;
 	docType: string;

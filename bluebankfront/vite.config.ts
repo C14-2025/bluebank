@@ -18,11 +18,13 @@ export default defineConfig({
 				changeOrigin: true,
 				secure: false,
 			},
+			"/accounts": "http://localhost:8080",
 			"/customers/by-doc": {
 				target: "http://localhost:8080",
 				changeOrigin: true,
 				secure: false,
 			},
+			"/transactions": "http://localhost:8080",
 		},
 	},
 });

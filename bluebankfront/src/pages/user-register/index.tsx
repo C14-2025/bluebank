@@ -2,14 +2,14 @@ import { useNavigate } from "react-router-dom";
 import type { InferType } from "yup";
 import { Formik, Form, Field, ErrorMessage } from "formik";
 
-import { createCustomer } from "@/services/put-customers-service";
+import { createCustomer } from "@/services/customers-services/post-customers-service";
 import { registerSchema } from "@/validators/register-form-validator";
 
 import { maskCountryCode, maskCPF, maskPhone } from "@/utils/masks";
 
 type RegisterFormValues = InferType<typeof registerSchema>;
 
-export function RegisterPage() {
+export function RegisterCustomerPage() {
   const navigate = useNavigate();
 
   const handleSubmitForm = async (values: RegisterFormValues) => {

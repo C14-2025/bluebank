@@ -1,8 +1,9 @@
 import { api } from "@/lib/api";
 
 import type { GetCustomerResponse } from "./responses/get-customer-response";
+import type { Customer } from "@/types/customer";
 
-export async function getCustomersList(
+export async function fetchCustomers(
 	page: number = 0
 ): Promise<GetCustomerResponse> {
 	const requestInit = {
@@ -17,10 +18,29 @@ export async function getCustomersList(
 
 		const content = (await res.json()) as GetCustomerResponse;
 		return content;
-	} catch (err: any) {
-		alert(
-			"Erro ao requisitar informações: " + (err?.message || "Erro desconhecido")
-		);
+	} catch (err: unknown) {
+		// convert unknown error to string safely
+		const msg = err instanceof Error ? err.message : String(err);
+		alert("Erro ao requisitar informações: " + (msg || "Erro desconhecido"));
+		throw err;
+	}
+}
+
+export async function getCustomer(id: string): Promise<Customer> {
+	const requestInit = {
+		method: "GET",
+		headers: {
+			"Content-Type": "application/json",
+		},
+	};
+
+	try {
+		const res = await api(`/customers/${id}`, requestInit);
+		const content = (await res.json()) as Customer;
+		return content;
+	} catch (err: unknown) {
+		const msg = err instanceof Error ? err.message : String(err);
+		alert("Erro ao requisitar informações: " + (msg || "Erro desconhecido"));
 		throw err;
 	}
 }
@@ -44,10 +64,9 @@ export async function getCustomersListByDoc(
 
 		const content = (await res.json()) as GetCustomerResponse;
 		return content;
-	} catch (err: any) {
-		alert(
-			"Erro ao requisitar informações: " + (err?.message || "Erro desconhecido")
-		);
+	} catch (err: unknown) {
+		const msg = err instanceof Error ? err.message : String(err);
+		alert("Erro ao requisitar informações: " + (msg || "Erro desconhecido"));
 		throw err;
 	}
 }
@@ -78,10 +97,9 @@ export async function searchCustomers(
 		const res = await api(url, requestInit);
 		const json = (await res.json()) as GetCustomerResponse;
 		return json;
-	} catch (err: any) {
-		alert(
-			"Erro ao requisitar informações: " + (err?.message || "Erro desconhecido")
-		);
+	} catch (err: unknown) {
+		const msg = err instanceof Error ? err.message : String(err);
+		alert("Erro ao requisitar informações: " + (msg || "Erro desconhecido"));
 		throw err;
 	}
 }

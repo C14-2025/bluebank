@@ -1,27 +1,26 @@
 import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router";
-import { Pencil } from "lucide-react";
 import { Trash } from "lucide-react"
 import type { Customer } from "@/types/customer";
-import { getCustomersList, getCustomersListByDoc, searchCustomers } from "@/services/get-customers-service";
+import { fetchCustomers, getCustomersListByDoc, searchCustomers } from "@/services/customers-services/get-customers-service";
+import type { GetCustomerResponse } from "@/services/customers-services/responses/get-customer-response";
 import { Funnel } from "lucide-react";
 import { Menu, MenuItem } from "@mui/material";
-
-// server handles page size; no client-side slicing
+import { deleteCustomer } from "@/services/customers-services/delete-customer-service";
 
 export function UsersPage() {
-  const [page, setPage] = useState(0);
+  const [page, setPage] = useState<number>(0);
   const [users, setUsers] = useState<Customer[]>([]);
-  const [totalPages, setTotalPages] = useState(10);
-  const [userNameFilter, setUserNameFilter] = useState("");
-  const [userDocFilter, setUserDocFilter] = useState("");
-  const [userDocTypeFilter, setUserDocTypeFilter] = useState("");
-  const [dobFilter, setDobFilter] = useState("");
-  const [nationalityFilter, setNationalityFilter] = useState("");
-  const [occupationFilter, setOccupationFilter] = useState("");
-  const [createdAtFilter, setCreatedAtFilter] = useState("");
-  const [updatedAtFilter, setUpdatedAtFilter] = useState("");
-  const [pageSizeFilter, setPageSizeFilter] = useState("");
+  const [totalPages, setTotalPages] = useState<number>(10);
+  const [userNameFilter, setUserNameFilter] = useState<string>("");
+  const [userDocFilter, setUserDocFilter] = useState<string>("");
+  const [userDocTypeFilter, setUserDocTypeFilter] = useState<string>("");
+  const [dobFilter, setDobFilter] = useState<string>("");
+  const [nationalityFilter, setNationalityFilter] = useState<string>("");
+  const [occupationFilter, setOccupationFilter] = useState<string>("");
+  const [createdAtFilter, setCreatedAtFilter] = useState<string>("");
+  const [updatedAtFilter, setUpdatedAtFilter] = useState<string>("");
+  const [pageSizeFilter, setPageSizeFilter] = useState<string>("");
   const [currentSearchParams, setCurrentSearchParams] = useState<Record<string, string | number | undefined>>({});
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
 
@@ -59,8 +58,8 @@ export function UsersPage() {
     if (page < totalPages - 1) setPage(page + 1);
   }
   
-  function handleRegister() {
-    navigate('/register');
+  function handleRegisterCustomer() {
+    navigate('/registercustomer');
   }
 
   function handleApplyFilters(overrides: Record<string, string | number | undefined> = {}) {
@@ -92,18 +91,35 @@ export function UsersPage() {
           if (hasDocType && hasDocNumber && keys.length === 2) {
             const docType = String(currentSearchParams['doc-type']);
             const docNumber = String(currentSearchParams['doc-number']);
-            const resp = await getCustomersListByDoc(docNumber, docType);
-            setUsers(resp.content);
-            setTotalPages(resp.totalPages ?? (resp.content ? 1 : 0));
+            const respRaw = (await getCustomersListByDoc(docNumber, docType)) as unknown;
+
+            function isGetCustomerResponse(x: unknown): x is GetCustomerResponse {
+              return typeof x === 'object' && x !== null && 'content' in (x as Record<string, unknown>);
+            }
+
+            if (isGetCustomerResponse(respRaw)) {
+              const resp = respRaw;
+              setUsers(resp.content ?? []);
+              setTotalPages(resp.totalPages ?? (resp.content ? 1 : 0));
+            } else if (Array.isArray(respRaw)) {
+              setUsers(respRaw as Customer[]);
+              setTotalPages(respRaw.length ? 1 : 0);
+            } else if (respRaw) {
+              setUsers([respRaw as Customer]);
+              setTotalPages(1);
+            } else {
+              setUsers([]);
+              setTotalPages(0);
+            }
           } else {
             const resp = await searchCustomers({ ...currentSearchParams, page });
-            setUsers(resp.content);
-            setTotalPages(resp.totalPages);
+            setUsers(resp.content ?? []);
+            setTotalPages(resp.totalPages ?? 0);
           }
         } else {
-          const response = await getCustomersList(page);
-          setUsers(response.content);
-          setTotalPages(response.totalPages);
+          const response = await fetchCustomers(page);
+          setUsers(response.content ?? []);
+          setTotalPages(response.totalPages ?? 0);
         }
       } catch (err) {
         setUsers([]);
@@ -120,9 +136,23 @@ export function UsersPage() {
     );
   }, [userNameFilter, paginatedUsers]);
 
+  const handleDeleteUser = async (userId: string) => {
+    const confirmDelete = window.confirm("Tem certeza que deseja deletar este Cliente?");
+    if(!confirmDelete) return;
+
+    try {
+      await deleteCustomer(userId);
+      setUsers(prev => prev.filter(u => u.id !== userId))
+      alert("Cliente deletado com sucesso!");
+    } catch (error) {
+      alert("Erro ao deletar Cliente");
+    }
+    return;
+  }
+
   return (
     <div className="max-w-md mx-auto mt-10 p-6 bg-white rounded-xl shadow-lg">
-      <h2 className="text-center text-2xl font-bold mb-6">Lista de Usuários</h2>
+      <h2 className="text-center text-2xl font-bold mb-6">Lista de Clientes</h2>
       <div className="flex mb-4 flex-row gap-2 items-center justify-center">
         <button
         className="cursor-pointer"
@@ -233,9 +263,9 @@ export function UsersPage() {
         </Menu>
         <button
           className="w-full py-2 px-4 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition cursor-pointer font-semibold"
-          onClick={handleRegister}
+          onClick={handleRegisterCustomer}
           >
-          Cadastrar Novo Usuário
+          Cadastrar Novo Cliente
         </button>
       </div>
       <ul className="space-y-4">
@@ -250,11 +280,12 @@ export function UsersPage() {
               <span className="text-gray-600 text-sm">{user.email}</span>
             </div>
             <div className="flex items-center gap-2">
-              <button className="bg-gray-300 p-2 rounded-2xl w-9 h-9 flex items-center justify-center transition cursor-pointer hover:scale-110">
-                <Pencil className="text-blue-600" />
-              </button>
-              <button className="bg-gray-300 p-2 rounded-2xl w-9 h-9 flex items-center justify-center transition cursor-pointer hover:scale-110">
-                <Trash className="text-blue-600" />
+              <button 
+              className="bg-blue-600 w-10 h-10 p-2.5 rounded-lg flex items-center justify-center transition cursor-pointer hover:scale-110"
+              type="button"
+              value={user.id}
+              onClick={(e) => { e.stopPropagation(); handleDeleteUser(user.id); }}>
+                <Trash className="text-white" />
               </button>
             </div>
           </li>
@@ -262,21 +293,25 @@ export function UsersPage() {
       </ul>
       <div className="flex justify-between items-center mt-6">
         <button
-          className="px-3 py-1 bg-gray-300 rounded hover:bg-gray-400 disabled:opacity-50"
+          className="bg-blue-600 rounded-lg flex items-center justify-center transition cursor-pointer hover:scale-110 px-3 py-1  hover:bg-blue-700 "
           onClick={handlePrev}
           disabled={page === 0}
         >
-          Anterior
+          <span className="text-white">
+            Anterior
+          </span>
         </button>
-        <span className="text-sm text-gray-700">
+        <span className="text-sm">
           Página {page + 1} de {totalPages || 1}
         </span>
         <button
-          className="px-3 py-1 bg-gray-300 rounded hover:bg-gray-400 disabled:opacity-50"
+          className="bg-blue-600 rounded-lg flex items-center justify-center transition cursor-pointer hover:scale-110 px-3 py-1  hover:bg-blue-700 "
           onClick={handleNext}
           disabled={totalPages === 0 || page === totalPages - 1}
         >
-          Próxima
+          <span className="text-white">
+            Próxima
+          </span>
         </button>
       </div>
     </div>

@@ -1,8 +1,9 @@
 import { Header } from "@/components/header";
+import { RegisterAccountPage } from "@/pages/account-register";
 import { HomePage } from "@/pages/home";
 import { TransactionsPage } from "@/pages/transactions";
 import { UserProfile } from "@/pages/user-details-page";
-import { RegisterPage } from "@/pages/user-register";
+import { RegisterCustomerPage } from "@/pages/user-register";
 import { UsersPage } from "@/pages/users-page";
 import { Routes, Route, Navigate } from "react-router";
 
@@ -12,9 +13,10 @@ export function AppRoutes() {
       <Header />
       <Routes>
         <Route path="/" element={<HomePage />} />
-        <Route path="register" element={<RegisterPage />} />
+        <Route path="registercustomer" element={<RegisterCustomerPage />} />
+        <Route path="registeraccount/:customerId" element={<RegisterAccountPage />} />
         <Route path="users" element={<UsersPage />} />
-        <Route path="transactions" element={<TransactionsPage />} />
+        <Route path="transactionsaccounts" element={<TransactionsPage />} />
         <Route path="users/:id" element={<UserProfile />} />
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>

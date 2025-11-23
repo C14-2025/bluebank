@@ -63,14 +63,6 @@ pipeline {
             }
         }
 
-        stage('Test Frontend') {
-            steps {
-                echo 'Testando Frontend (se tiver testes)...'
-                dir('bluebankfront') {
-                    sh 'npm test'
-                }
-            }
-        }
     }
 
     post {

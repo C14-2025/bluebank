@@ -56,7 +56,7 @@ pipeline {
             steps {
                 echo 'Buildando Frontend (React/Vite)...'
                 dir('bluebankfront') {
-                    sh 'apk add --no-cache libatomic1'
+                    sh 'apt-get update && apt-get install -y libatomic1'
                     sh 'npm install'
                     sh 'npm run build'
                 }

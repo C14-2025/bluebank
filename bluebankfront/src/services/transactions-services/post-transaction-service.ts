@@ -1,5 +1,6 @@
 import { api } from "@/lib/api";
 import type { Transaction } from "@/types/transaction";
+import { toast } from "react-toastify";
 
 export async function createTransaction(
 	transaction: Omit<Transaction, "id">
@@ -15,16 +16,12 @@ export async function createTransaction(
 	};
 
 	try {
-		const res = await api("/transactions", requestInit);
-		if (res.ok) {
-			return res.ok;
-		} else {
-			const { message } = await res.json();
-			alert("Erro ao criar transação: " + (message || "Erro desconhecido"));
-			return false;
-		}
+		await api("/transactions", requestInit);
+
+		toast("Transação criada com sucesso!", { type: "success" });
+		return true;
 	} catch {
-		alert("Erro ao criar transação");
+		toast("Erro ao criar transação", { type: "error" });
 		return false;
 	}
 }

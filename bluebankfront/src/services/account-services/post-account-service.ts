@@ -1,5 +1,6 @@
-import { api } from "@/lib/api";
+import { api, type ErrorResponse } from "@/lib/api";
 import type { Account } from "@/types/account";
+import { toast } from "react-toastify";
 
 export async function createAccount(
 	account: Omit<Account, "id">
@@ -18,9 +19,11 @@ export async function createAccount(
 		const res = await api("/accounts", requestInit);
 
 		return res.ok;
-	} catch (err: unknown) {
-		const msg = err instanceof Error ? err.message : String(err);
-		alert("Erro ao registrar conta: " + (msg || "Erro desconhecido"));
+	} catch (err: ErrorResponse | any) {
+		toast.error(
+			"Erro ao registrar conta: " + (err.message || "Erro desconhecido"),
+			{ type: "error" }
+		);
 		return false;
 	}
 }

@@ -4,6 +4,7 @@ import type { Customer } from "@/types/customer";
 import { getCustomer } from "@/services/customers-services/get-customers-service";
 import { updateCustomer } from "@/services/customers-services/put-customer-service";
 import { Pencil } from "lucide-react";
+import { toast } from "react-toastify";
 
 export function UserProfile() {
   const { id } = useParams<{ id: string }>();
@@ -63,7 +64,7 @@ export function UserProfile() {
 
   async function handleSave() {
     if (!user || !user.id) {
-      alert("ID do Cliente não encontrado.");
+      toast.error("ID do Cliente não encontrado.", { type: "error" });
       return;
     }
 
@@ -83,10 +84,10 @@ export function UserProfile() {
       await updateCustomer(payload, user.id);
       setUser((prev) => (prev ? { ...prev, ...payload } as Customer : prev));
       setIsEditing(false);
-      alert("Alterações salvas.");
+      toast.success("Alterações salvas.", { type: "success" });
     } catch (err) {
       console.error(err);
-      alert("Erro ao salvar alterações.");
+      toast.error("Erro ao salvar alterações.", { type: "error" });
     }
   }
 

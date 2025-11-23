@@ -7,6 +7,7 @@ import type { GetCustomerResponse } from "@/services/customers-services/response
 import { Funnel } from "lucide-react";
 import { Menu, MenuItem } from "@mui/material";
 import { deleteCustomer } from "@/services/customers-services/delete-customer-service";
+import { toast } from "react-toastify";
 
 export function UsersPage() {
   const [page, setPage] = useState<number>(0);
@@ -91,7 +92,7 @@ export function UsersPage() {
           if (hasDocType && hasDocNumber && keys.length === 2) {
             const docType = String(currentSearchParams['doc-type']);
             const docNumber = String(currentSearchParams['doc-number']);
-            const respRaw = (await getCustomersListByDoc(docNumber, docType)) as unknown;
+            const respRaw = (await getCustomersListByDoc(docNumber, docType))
 
             function isGetCustomerResponse(x: unknown): x is GetCustomerResponse {
               return typeof x === 'object' && x !== null && 'content' in (x as Record<string, unknown>);
@@ -102,8 +103,9 @@ export function UsersPage() {
               setUsers(resp.content ?? []);
               setTotalPages(resp.totalPages ?? (resp.content ? 1 : 0));
             } else if (Array.isArray(respRaw)) {
-              setUsers(respRaw as Customer[]);
-              setTotalPages(respRaw.length ? 1 : 0);
+              const customers = respRaw as Customer[];
+              setUsers(customers);
+              setTotalPages(customers.length ? 1 : 0);
             } else if (respRaw) {
               setUsers([respRaw as Customer]);
               setTotalPages(1);
@@ -143,9 +145,9 @@ export function UsersPage() {
     try {
       await deleteCustomer(userId);
       setUsers(prev => prev.filter(u => u.id !== userId))
-      alert("Cliente deletado com sucesso!");
+      toast.success("Cliente deletado com sucesso!", { type: "success" });
     } catch (error) {
-      alert("Erro ao deletar Cliente");
+      toast.error("Erro ao deletar Cliente", { type: "error" });
     }
     return;
   }

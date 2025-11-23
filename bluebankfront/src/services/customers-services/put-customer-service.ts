@@ -1,7 +1,9 @@
 import { api } from "@/lib/api";
 import { sanitize } from "@/utils/santize";
 import type { registerSchema } from "@/validators/register-form-validator";
+import type { ErrorResponse } from "@/lib/api";
 import type { InferType } from "yup";
+import { toast } from "react-toastify";
 
 type RegisterFormValues = InferType<typeof registerSchema>;
 
@@ -23,9 +25,10 @@ export async function updateCustomer(
 		const res = await api(`/customers/${id}`, requestInit);
 
 		return res.ok;
-	} catch (err: unknown) {
-		const msg = err instanceof Error ? err.message : String(err);
-		alert("Erro ao registrar: " + (msg || "Erro desconhecido"));
+	} catch (err: ErrorResponse | any) {
+		toast.error("Erro ao registrar: " + (err.message || "Erro desconhecido"), {
+			type: "error",
+		});
 		return false;
 	}
 }

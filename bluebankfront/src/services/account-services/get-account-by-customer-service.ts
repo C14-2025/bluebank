@@ -1,5 +1,6 @@
-import { api } from "@/lib/api";
+import { api, type ErrorResponse } from "@/lib/api";
 import type { Account } from "@/types/account";
+import { toast } from "react-toastify";
 
 export async function getAccountByCustomerDocument(
 	docType: string,
@@ -25,12 +26,14 @@ export async function getAccountByCustomerDocument(
 			)}&doc-number=${params.get("doc-number")}`,
 			requestInit
 		);
-		console.log(res);
 		const content = (await res.json()) as Account;
 		return content;
-	} catch (err: unknown) {
-		const msg = err instanceof Error ? err.message : String(err);
-		alert("Erro ao buscar conta do cliente: " + (msg || "Erro desconhecido"));
+	} catch (err: ErrorResponse | any) {
+		toast.error(
+			"Erro ao buscar conta do cliente: " +
+				(err.message || "Erro desconhecido"),
+			{ type: "error" }
+		);
 		throw err;
 	}
 }

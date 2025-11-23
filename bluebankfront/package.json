@@ -9,7 +9,6 @@
     "lint": "eslint .",
     "preview": "vite preview"
   },
-  
   "dependencies": {
     "@emotion/react": "^11.14.0",
     "@emotion/styled": "^11.14.1",
@@ -22,6 +21,7 @@
     "react-input-mask": "^2.0.4",
     "react-router": "^7.9.6",
     "react-router-dom": "^7.9.6",
+    "react-toastify": "^11.0.5",
     "tailwindcss": "^4.1.17",
     "yup": "^1.7.1"
   },

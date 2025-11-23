@@ -1,10 +1,33 @@
 import { API_BASE_URL } from "@/config/constants";
 
-export function api<T>(path: string, init?: RequestInit) {
-	// When API_BASE_URL is empty, use relative paths so Vite dev proxy can forward requests.
-	const requestInfo: string = API_BASE_URL
+export interface ErrorResponse {
+	status: number;
+	message: string;
+}
+
+export async function api(path: string, init?: RequestInit) {
+	const requestInfo = API_BASE_URL
 		? new URL(path, API_BASE_URL).toString()
 		: path;
 
-	return fetch(requestInfo, init) as Promise<Response>;
+	const res = await fetch(requestInfo, init);
+
+	if (!res.ok) {
+		const errorBody = await safeJson(res);
+
+		throw {
+			status: errorBody?.status || res.status,
+			message: errorBody?.message || "Erro na requisição",
+		};
+	}
+
+	return res;
+}
+
+async function safeJson(res: Response): Promise<ErrorResponse | null> {
+	try {
+		return await res.json();
+	} catch {
+		return null;
+	}
 }

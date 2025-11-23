@@ -1,7 +1,8 @@
-import { api } from "@/lib/api";
+import { api, type ErrorResponse } from "@/lib/api";
 
 import type { GetCustomerResponse } from "./responses/get-customer-response";
 import type { Customer } from "@/types/customer";
+import { toast } from "react-toastify";
 
 export async function fetchCustomers(
 	page: number = 0
@@ -38,9 +39,11 @@ export async function getCustomer(id: string): Promise<Customer> {
 		const res = await api(`/customers/${id}`, requestInit);
 		const content = (await res.json()) as Customer;
 		return content;
-	} catch (err: unknown) {
-		const msg = err instanceof Error ? err.message : String(err);
-		alert("Erro ao requisitar informações: " + (msg || "Erro desconhecido"));
+	} catch (err: ErrorResponse | any) {
+		toast.error(
+			"Erro ao requisitar informações: " + (err.message || "Erro desconhecido"),
+			{ type: "error" }
+		);
 		throw err;
 	}
 }
@@ -64,9 +67,11 @@ export async function getCustomersListByDoc(
 
 		const content = (await res.json()) as GetCustomerResponse;
 		return content;
-	} catch (err: unknown) {
-		const msg = err instanceof Error ? err.message : String(err);
-		alert("Erro ao requisitar informações: " + (msg || "Erro desconhecido"));
+	} catch (err: ErrorResponse | any) {
+		toast.error(
+			"Erro ao requisitar informações: " + (err.message || "Erro desconhecido"),
+			{ type: "error" }
+		);
 		throw err;
 	}
 }
@@ -81,7 +86,6 @@ export async function searchCustomers(
 		},
 	};
 
-	// Remove undefined or empty params
 	const cleaned: Record<string, string> = {};
 	Object.entries(params).forEach(([k, v]) => {
 		if (v === undefined || v === null) return;
@@ -97,9 +101,11 @@ export async function searchCustomers(
 		const res = await api(url, requestInit);
 		const json = (await res.json()) as GetCustomerResponse;
 		return json;
-	} catch (err: unknown) {
-		const msg = err instanceof Error ? err.message : String(err);
-		alert("Erro ao requisitar informações: " + (msg || "Erro desconhecido"));
+	} catch (err: ErrorResponse | any) {
+		toast.error(
+			"Erro ao requisitar informações: " + (err.message || "Erro desconhecido"),
+			{ type: "error" }
+		);
 		throw err;
 	}
 }

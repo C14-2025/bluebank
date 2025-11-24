@@ -61,7 +61,7 @@ O projeto foi organizado em formato de **monorepo**, contendo:
 
 Pré‑requisitos:
 
-* Java 17
+* Java 21
 * Maven
 * PostgreSQL
 

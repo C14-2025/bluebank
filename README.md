@@ -11,13 +11,18 @@ Aplicação desenvolvida para a disciplina de Engenharia de Software. O projeto 
 * **Marcelo Froes Padilha Filho**
 * **Miguel Vianna Streva**
 
----
+## 🤝 Contribuições da Equipe
+
+* **Miguel Vianna Streva** — Desenvolvimento principal da **API** (arquitetura, regras de negócio, JPA/Hibernate, DTOs, validações, mapeamentos e lógica de transações), além de suporte conceitual ao restante do projeto.
+* **Marcelo Froes Padilha Filho** — Colaboração direta no desenvolvimento da **API**, contribuindo com decisões técnicas, revisão de ideias, apoio no desenho das funcionalidades e participação ativa no processo.
+* **Douglas Hideaki De Almeida Otani** — Desenvolvimento completo do **frontend** em React, TypeScript e Tailwind, incluindo rotas, formulários, máscaras, validações, comunicação com a API e construção de todas as telas.
+* **Bruno Ferreira Fernandes Ribeiro** — Responsável pela **pipeline do Jenkins**, automações de build, testes e empacotamento do projeto.
 
 ## 🚀 Tecnologias Utilizadas
 
 ### **Backend (API)**
 
-* **Java 17**
+* **Java 21**
 * **Spring Boot** (Web, Validation, JPA)
 * **PostgreSQL**
 * **Hibernate**
@@ -217,3 +222,4 @@ Projeto acadêmico — uso livre para estudos.
 ## 📞 Contato
 
 Em caso de dúvidas, fale com qualquer integrante do grupo ou abra uma issue no repositório.
+

@@ -96,10 +96,8 @@ export function TransactionsPage() {
 							payeeEmail: payee.email,
 						});
 
-						toast.success("Transferência simulada com sucesso!");
 						resetForm();
 					} catch (error) {
-						toast.error("Erro ao simular transferência.");
 					} finally {
 						setSubmitting(false);
 					}

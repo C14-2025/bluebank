@@ -6,7 +6,7 @@ import java.math.BigDecimal;
 
 public record AccountRequestUpdateDTO(
 
-        @NotNull(message = "Account number is mandatory")
+        @NotBlank(message = "Account number is mandatory")
         @Pattern(regexp = "\\d{8,12}", message = "Account number must have between 8 and 12 digits")
         String accountNumber,
 

@@ -44,6 +44,9 @@ public class Account {
     @OneToMany(mappedBy = "payee")
     private List<Transaction> receivedTransactions;
 
+    @OneToMany(mappedBy = "account")
+    private List<Investment> investments;
+
     @CreatedDate
     @Column(name = "created_at", nullable = false)
     private LocalDateTime createdAt;

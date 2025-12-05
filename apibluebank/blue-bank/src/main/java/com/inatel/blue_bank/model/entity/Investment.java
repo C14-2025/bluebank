@@ -34,6 +34,10 @@ public class Investment {
     @Column(name = "cost_per_share", nullable = false)
     private BigDecimal costPerShare;
 
+    @ManyToOne
+    @JoinColumn(name = "account_id")
+    private Account account;
+
     @CreatedDate
     @Column(name = "created_at", nullable = false)
     private LocalDateTime createdAt;

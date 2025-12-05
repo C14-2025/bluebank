@@ -1,5 +1,6 @@
 package com.inatel.blue_bank.service;
 
+import com.inatel.blue_bank.exception.DeniedOperationException;
 import com.inatel.blue_bank.model.entity.Account;
 import com.inatel.blue_bank.model.entity.Investment;
 import com.inatel.blue_bank.repository.InvestmentRepository;
@@ -18,6 +19,9 @@ public class InvestmentService {
     private final InvestmentRepository repository;
 
     public Investment save(Investment investment) {
+        if(investment.getTicker() == null) {
+            throw new DeniedOperationException("Ticker is null");
+        }
         return repository.save(investment);
     }
 
@@ -30,7 +34,18 @@ public class InvestmentService {
     }
 
     public void update(Investment investment) {
-        repository.save(investment);
+        Optional<Investment> investmentOptional = repository.findById(investment.getId());
+
+        if(investmentOptional.isEmpty()) {
+            throw new IllegalArgumentException("Investment not found");
+        }
+
+        Investment investmentToUpdate = investmentOptional.get();
+
+        if (investmentToUpdate.getTicker().compareTo(investment.getTicker()) != 0) {
+            throw new DeniedOperationException("Ticker does not match");
+        }
+        repository.save(investmentToUpdate);
     }
 
     public void delete(Investment investment) {

@@ -7,7 +7,7 @@ import java.util.UUID;
 
 public record AccountRequestSaveDTO(
 
-        @NotNull(message = "Account number is mandatory")
+        @NotBlank(message = "Account number is mandatory")
         @Pattern(regexp = "\\d{8,12}", message = "Account number must have between 8 and 12 digits")
         String accountNumber,
 

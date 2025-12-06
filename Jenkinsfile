@@ -15,7 +15,7 @@ pipeline {
             }
         }
 
-        stage('Build Backend') {
+        stage('Build') {
             steps {
                 echo 'Buildando Backend (Spring Boot)...'
                 dir('apibluebank/blue-bank') {
@@ -24,7 +24,7 @@ pipeline {
             }
         }
 
-        stage('Test Backend') {
+        stage('Test') {
             steps {
                 echo 'Testando Backend...'
                 dir('apibluebank/blue-bank') {
@@ -38,7 +38,7 @@ pipeline {
             }
         }
 
-        stage('Package Backend') {
+        stage('Package') {
             steps {
                 echo 'Gerando JAR do Backend...'
                 dir('apibluebank/blue-bank') {
@@ -48,17 +48,6 @@ pipeline {
             post {
                 success {
                     archiveArtifacts artifacts: 'apibluebank/blue-bank/target/*.jar'
-                }
-            }
-        }
-
-        stage('Build Frontend') {
-            steps {
-                echo 'Buildando Frontend (React/Vite)...'
-                dir('bluebankfront') {
-                    sh 'apt-get update && apt-get install -y libatomic1'
-                    sh 'npm install'
-                    sh 'npm run build'
                 }
             }
         }

@@ -44,6 +44,10 @@ public class AccountService {
         return repository.findByCustomerEmail(email);
     }
 
+    public Optional<Account> findByAccountNumberAndBranchCode(String accountNumber, Integer branchCode) {
+        return repository.findByAccountNumberAndBranchCode(accountNumber, branchCode);
+    }
+
     public Page<Account> search(String accountNumber,
                                  Integer branchCode,
                                  LocalDateTime createdAt,

@@ -36,4 +36,6 @@ public interface AccountRepository extends JpaRepository<Account, UUID>, JpaSpec
     );
 
     Optional<Account> findByCustomerEmail(String email);
+
+    Optional<Account> findByAccountNumberAndBranchCode(String accountNumber, Integer branchCode);
 }

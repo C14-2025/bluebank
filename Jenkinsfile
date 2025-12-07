@@ -74,9 +74,12 @@ pipeline {
 
                     if [ ! -d "${NODE_DIR}" ]; then
                         echo "Baixando Node.js ${NODE_VERSION}..."
-                        curl -L -O https://nodejs.org/dist/v${NODE_VERSION}/${NODE_TAR}
-                        tar -xf ${NODE_TAR}
+                        curl -L -o ${NODE_TAR} https://nodejs.org/dist/v${NODE_VERSION}/${NODE_TAR}
+                        tar -xzf ${NODE_TAR}
                         rm ${NODE_TAR}
+                        echo "Node.js instalado com sucesso!"
+                    else
+                        echo "Node.js já estava no cache → pulando download"
                     fi
 
                     export PATH="${WORKSPACE}/${NODE_DIR}/bin:$PATH"

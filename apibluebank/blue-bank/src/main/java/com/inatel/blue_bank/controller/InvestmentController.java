@@ -1,5 +1,9 @@
 package com.inatel.blue_bank.controller;
 
+import com.inatel.blue_bank.mapper.InvestmentMapper;
+import com.inatel.blue_bank.model.dto.investment.InvestmentResponseDTO;
+import com.inatel.blue_bank.model.dto.investment.InvestmentSaveDTO;
+import com.inatel.blue_bank.model.dto.investment.InvestmentUpdateDTO;
 import com.inatel.blue_bank.model.entity.Account;
 import com.inatel.blue_bank.model.entity.Investment;
 import com.inatel.blue_bank.service.AccountService;
@@ -19,26 +23,32 @@ import java.util.UUID;
 public class InvestmentController implements GenericController {
     private final InvestmentService service;
     private final AccountService accountService;
+    private final InvestmentMapper mapper;
 
     @PostMapping
-    public ResponseEntity<Void> save(@RequestBody Investment investment) {
+    public ResponseEntity<Void> save(@RequestBody InvestmentSaveDTO dto) {
+        Investment investment = mapper.toEntity(dto);
         service.save(investment);
         URI location = generateHeaderLocation(investment.getId());
         return ResponseEntity.created(location).build();
     }
 
     @GetMapping("{id}")
-    public ResponseEntity<Investment> getDetails(@PathVariable("id") String id) {
+    public ResponseEntity<InvestmentResponseDTO> getDetails(@PathVariable("id") String id) {
         UUID investmentId = UUID.fromString(id);
 
         return service
                 .findById(investmentId)
-                .map(ResponseEntity::ok)
+                .map(investment -> {
+                    InvestmentResponseDTO dto = mapper
+                            .toResponseDTO(investment);
+                    return ResponseEntity.ok(dto);
+                })
                 .orElseGet(() -> ResponseEntity.notFound().build());
     }
 
     @GetMapping
-    public ResponseEntity<List<Investment>> search(
+    public ResponseEntity<List<InvestmentResponseDTO>> searchByAccount(
             @RequestParam(value = "account-number", required = false) String accountNumber,
             @RequestParam(value = "branch-code", required = false) Integer branchCode) {
 
@@ -49,13 +59,16 @@ public class InvestmentController implements GenericController {
         }
 
         List<Investment> searchResult = service.searchByAccount(accountOptional.get());
+        List<InvestmentResponseDTO> list = searchResult
+                .stream()
+                .map(mapper::toResponseDTO).toList();
 
-        return ResponseEntity.ok(searchResult);
+        return ResponseEntity.ok(list);
     }
 
     @PutMapping("{id}")
     public ResponseEntity<Void> update(
-            @PathVariable("id") String id, @RequestBody Investment investment) {
+            @PathVariable("id") String id, @RequestBody InvestmentUpdateDTO dto) {
 
         UUID investmentId = UUID.fromString(id);
         Optional<Investment> investmentOptional = service.findById(investmentId);
@@ -65,9 +78,9 @@ public class InvestmentController implements GenericController {
         }
 
         Investment investmentFound = investmentOptional.get();
-        investmentFound.setName(investment.getName());
-        investmentFound.setShare(investment.getShare());
-        investmentFound.setCostPerShare(investment.getCostPerShare());
+        investmentFound.setName(dto.name());
+        investmentFound.setShare(dto.share());
+        investmentFound.setCostPerShare(dto.costPerShare());
 
         service.update(investmentFound);
 

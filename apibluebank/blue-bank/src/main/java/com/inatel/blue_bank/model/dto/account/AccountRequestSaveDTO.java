@@ -1,4 +1,4 @@
-package com.inatel.blue_bank.model.dto;
+package com.inatel.blue_bank.model.dto.account;
 
 import jakarta.validation.constraints.*;
 

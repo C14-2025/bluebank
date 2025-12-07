@@ -1,9 +1,9 @@
 package com.inatel.blue_bank.controller;
 
 import com.inatel.blue_bank.mapper.AccountMapper;
-import com.inatel.blue_bank.model.dto.AccountRequestSaveDTO;
-import com.inatel.blue_bank.model.dto.AccountRequestUpdateDTO;
-import com.inatel.blue_bank.model.dto.AccountResponseDTO;
+import com.inatel.blue_bank.model.dto.account.AccountRequestSaveDTO;
+import com.inatel.blue_bank.model.dto.account.AccountRequestUpdateDTO;
+import com.inatel.blue_bank.model.dto.account.AccountResponseDTO;
 import com.inatel.blue_bank.model.entity.Account;
 import com.inatel.blue_bank.model.entity.DocType;
 import com.inatel.blue_bank.service.AccountService;

@@ -1,7 +1,7 @@
 package com.inatel.blue_bank.mapper;
 
-import com.inatel.blue_bank.model.dto.TransactionRequestDTO;
-import com.inatel.blue_bank.model.dto.TransactionResponseDTO;
+import com.inatel.blue_bank.model.dto.transaction.TransactionRequestDTO;
+import com.inatel.blue_bank.model.dto.transaction.TransactionResponseDTO;
 import com.inatel.blue_bank.model.entity.Transaction;
 import com.inatel.blue_bank.service.AccountService;
 import org.mapstruct.Mapper;

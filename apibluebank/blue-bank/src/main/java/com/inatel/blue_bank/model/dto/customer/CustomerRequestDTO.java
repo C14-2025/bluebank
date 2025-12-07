@@ -1,4 +1,4 @@
-package com.inatel.blue_bank.model.dto;
+package com.inatel.blue_bank.model.dto.customer;
 
 import com.inatel.blue_bank.model.entity.DocType;
 import com.inatel.blue_bank.validator.ValidPhoneNumber;

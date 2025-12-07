@@ -1,0 +1,650 @@
+{
+	"info": {
+		"_postman_id": "3eccb56c-4100-49cf-ab32-b0390719fa72",
+		"name": "BlueBank",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "39345557",
+		"_collection_link": "https://miguelstreva.postman.co/workspace/Miguel-Streva's-Workspace~c3058e9b-01e9-48f5-8950-8039550b15d6/collection/45254105-3eccb56c-4100-49cf-ab32-b0390719fa72?action=share&source=collection_link&creator=39345557"
+	},
+	"item": [
+		{
+			"name": "Customers",
+			"item": [
+				{
+					"name": "Save",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"fullName\": \"Carina Pereira Novais\",\r\n    \"dob\": \"2003-02-06\",\r\n    \"nationality\": \"American\",\r\n    \"phone\": \"22998640708\",\r\n    \"countryCode\": \"+55\",\r\n    \"email\": \"carina@gmail.com\",\r\n    \"occupation\": \"Student\",\r\n    \"docType\": \"CPF\",\r\n    \"docNumber\": \"14813582789\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8080/customers",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"customers"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Details",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"fullName\": \"John Doe\",\r\n    \"dob\": \"1965-09-03\",\r\n    \"nationality\": \"American\",\r\n    \"phone\": \"3475551234\",\r\n    \"countryCode\": \"+1\",\r\n    \"email\": \"johndoe@hotmail.com\",\r\n    \"occupation\": \"Actor\",\r\n    \"docType\": \"PASSPORT\",\r\n    \"docNumber\": \"12345678\"\r\n}"
+						},
+						"url": {
+							"raw": "http://localhost:8080/customers/:id",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"customers",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "0b5b6f81-a016-4935-8b1f-553ab5c3a287"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Details By Doc",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"fullName\": \"John Doe\",\r\n    \"dob\": \"1965-09-03\",\r\n    \"nationality\": \"American\",\r\n    \"phone\": \"3475551234\",\r\n    \"countryCode\": \"+1\",\r\n    \"email\": \"johndoe@hotmail.com\",\r\n    \"occupation\": \"Actor\",\r\n    \"docType\": \"PASSPORT\",\r\n    \"docNumber\": \"12345678\"\r\n}"
+						},
+						"url": {
+							"raw": "http://localhost:8080/customers/by-doc?doc-type=CPF&doc-number=14814582788",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"customers",
+								"by-doc"
+							],
+							"query": [
+								{
+									"key": "doc-type",
+									"value": "CPF"
+								},
+								{
+									"key": "doc-number",
+									"value": "14814582788"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Search",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/customers?full-name=&dob&nationality&occupation=Student&page=1&page-size=1",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"customers"
+							],
+							"query": [
+								{
+									"key": "full-name",
+									"value": ""
+								},
+								{
+									"key": "dob",
+									"value": null
+								},
+								{
+									"key": "nationality",
+									"value": null
+								},
+								{
+									"key": "occupation",
+									"value": "Student"
+								},
+								{
+									"key": "page",
+									"value": "1"
+								},
+								{
+									"key": "page-size",
+									"value": "1"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"fullName\": \"John Doe\",\r\n    \"dob\": \"1965-09-03\",\r\n    \"nationality\": \"American\",\r\n    \"phone\": \"3475551234\",\r\n    \"countryCode\": \"+1\",\r\n    \"email\": \"johndoe@gmail.com\",\r\n    \"occupation\": \"Actor\",\r\n    \"docType\": \"PASSPORT\",\r\n    \"docNumber\": \"12345678\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8080/customers/:id",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"customers",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "0b5b6f81-a016-4935-8b1f-553ab5c3a287"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"fullName\": \"Marcelo Froes Padilha Filho\",\r\n    \"dob\": \"2005-01-14\",\r\n    \"nationality\": \"Brazilian\",\r\n    \"phone\": \"22998640707\",\r\n    \"countryCode\": \"+55\",\r\n    \"email\": \"marcelofroespadilha@gmail.com\",\r\n    \"occupation\": \"Student\",\r\n    \"docType\": \"CPF\",\r\n    \"docNumber\": \"14814582788\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8080/customers/:id",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"customers",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "61018e5e-43c4-42bc-8373-2da13f277cd0"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Account",
+			"item": [
+				{
+					"name": "Save",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"accountNumber\": \"123456789\",\r\n    \"balance\": \"0.00\",\r\n    \"branchCode\": \"123\",\r\n    \"customerId\": \"ed06d00b-7d23-40a7-b37c-e48936773135\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8080/accounts",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"accounts"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"accountNumber\": \"33333333\",\r\n    \"balance\": \"100000000\",\r\n    \"branchCode\": \"123\",\r\n    \"customerId\": \"cf48dcf5-2638-43b3-8c15-7301f8e56a36\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8080/accounts/:id",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"accounts",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "1417d676-1c71-4cfa-a2f3-13cb426650f6"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Details",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"accountNumber\": \"22222222777777777777777L\",\r\n    \"balance\": \"0.00\",\r\n    \"branchCode\": \"123\",\r\n    \"customerId\": \"0b5b6f81-a016-4935-8b1f-553ab5c3a287\"\r\n}"
+						},
+						"url": {
+							"raw": "http://localhost:8080/accounts/:id",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"accounts",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "1417d676-1c71-4cfa-a2f3-13cb426650f6"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Details By Doc",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"accountNumber\": \"22222222777777777777777L\",\r\n    \"balance\": \"0.00\",\r\n    \"branchCode\": \"123\",\r\n    \"customerId\": \"0b5b6f81-a016-4935-8b1f-553ab5c3a287\"\r\n}"
+						},
+						"url": {
+							"raw": "http://localhost:8080/accounts/by-doc?doc-type&doc-number",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"accounts",
+								"by-doc"
+							],
+							"query": [
+								{
+									"key": "doc-type",
+									"value": null
+								},
+								{
+									"key": "doc-number",
+									"value": null
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Search",
+					"request": {
+						"method": "GET",
+						"header": []
+					},
+					"response": []
+				},
+				{
+					"name": "Delete",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"accountNumber\": \"22222222777777777777777L\",\r\n    \"balance\": \"0.00\",\r\n    \"branchCode\": \"123\",\r\n    \"customerId\": \"0b5b6f81-a016-4935-8b1f-553ab5c3a287\"\r\n}"
+						},
+						"url": {
+							"raw": "http://localhost:8080/accounts/:id",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"accounts",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "fcda9e95-e695-4829-9c0c-8933fdba1bc5"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Transactions",
+			"item": [
+				{
+					"name": "Save",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n   \"amount\": \"500000\",\r\n   \"payerEmail\": \"marcelofroespadilha@gmail.com\",\r\n   \"payeeEmail\": \"carina@gmail.com\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8080/transactions",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"transactions"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Details",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n   \"amount\": \"1000000\",\r\n   \"payerEmail\": \"otani.douglas@hotmail.com\",\r\n   \"payeeEmail\": \"miguezlinho@hotmail.com\"\r\n}"
+						},
+						"url": {
+							"raw": "http://localhost:8080/transactions/:id",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"transactions",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "cda76672-3d76-451a-a1af-08b8a85000ee"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"accountNumber\": \"22222222777777777777777L\",\r\n    \"balance\": \"0.00\",\r\n    \"branchCode\": \"123\",\r\n    \"customerId\": \"0b5b6f81-a016-4935-8b1f-553ab5c3a287\"\r\n}"
+						},
+						"url": {
+							"raw": "http://localhost:8080/transactions/:id",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"transactions",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "cda76672-3d76-451a-a1af-08b8a85000ee"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Invesments",
+			"item": [
+				{
+					"name": "Save",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"ticker\": \"AAPL\",\r\n    \"name\": \"Apple Inc\",\r\n    \"share\": \"1\",\r\n    \"costPerShare\": \"278.78\",\r\n    \"accountId\": \"99b71f5e-f955-4910-bad4-1c79dca80985\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8080/investments",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"investments"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Details",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/investments/:id",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"investments",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "3d3b0c77-7ffc-4c05-818c-a87c87411bc7"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Search By Account",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/investments?account-number=574564643643&branch-code=123",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"investments"
+							],
+							"query": [
+								{
+									"key": "account-number",
+									"value": "574564643643"
+								},
+								{
+									"key": "branch-code",
+									"value": "123"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"name\": \"Apple Stock\",\r\n    \"share\": 2.0,\r\n    \"costPerShare\": 300.0\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8080/investments/:id",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"investments",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "3d3b0c77-7ffc-4c05-818c-a87c87411bc7"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/investments/:id",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"investments",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "3d3b0c77-7ffc-4c05-818c-a87c87411bc7"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	]
+}

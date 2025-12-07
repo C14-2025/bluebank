@@ -68,19 +68,18 @@ pipeline {
             steps {
                 echo 'Instalando Node.js + Newman automaticamente...'
                 sh '''
+                    set -e
                     NODE_VERSION="20.18.0"
                     NODE_DIR="node-v${NODE_VERSION}-linux-x64"
-                    NODE_TAR="${NODE_DIR}.tar.xz"
 
-                    if [ ! -d "${NODE_DIR}" ]; then
-                        echo "Baixando Node.js ${NODE_VERSION}..."
-                        curl -L -o ${NODE_TAR} https://nodejs.org/dist/v${NODE_VERSION}/${NODE_TAR}
-                        tar -xzf ${NODE_TAR}
-                        rm ${NODE_TAR}
-                        echo "Node.js instalado com sucesso!"
-                    else
-                        echo "Node.js já estava no cache → pulando download"
-                    fi
+                    rm -rf "${NODE_DIR}" node-v*.tar.*
+
+                    echo "Baixando Node.js ${NODE_VERSION} (.tar.gz - compatível com todos os Jenkins)..."
+                    curl -L -o node.tar.gz https://nodejs.org/dist/v${NODE_VERSION}/node-v${NODE_VERSION}-linux-x64.tar.gz
+                    
+                    echo "Descompactando Node.js..."
+                    tar -xzf node.tar.gz
+                    rm node.tar.gz
 
                     export PATH="${WORKSPACE}/${NODE_DIR}/bin:$PATH"
 

@@ -1,3 +1,4 @@
+// Jenkinsfile (na raiz do repositório)
 pipeline {
     agent any
 
@@ -5,6 +6,8 @@ pipeline {
         MAVEN_CMD = './mvnw'
         APP_PORT = '8080'
         BASE_URL = "http://localhost:${APP_PORT}"
+        PROJECT_DIR = 'apibluebank/blue-bank'
+        POSTMAN_DIR = 'apibluebank/postman'
     }
 
     stages {
@@ -17,46 +20,65 @@ pipeline {
 
         stage('Start Application') {
             steps {
-                echo 'Iniciando a aplicação Spring Boot para testes de integração...'
+                echo 'Iniciando a aplicação Spring Boot...'
                 sh '''
-                    cd blue-bank
+                    # Verifica se o diretório existe
+                    if [ ! -d "${PROJECT_DIR}" ]; then
+                        echo "ERRO: Diretório ${PROJECT_DIR} não encontrado!"
+                        pwd
+                        ls -la
+                        exit 1
+                    fi
+
+                    cd ${PROJECT_DIR}
+
+                    # Limpa PID antigo
+                    rm -f spring-boot.pid
+
+                    # Inicia a aplicação
+                    echo "Iniciando Spring Boot em background..."
                     nohup ${MAVEN_CMD} spring-boot:run -Dserver.port=${APP_PORT} > app.log 2>&1 &
                     echo $! > spring-boot.pid
-                    
-                    echo "Aguardando aplicação subir em ${BASE_URL}..."
+
+                    echo "Aplicação iniciada com PID $(cat spring-boot.pid)"
+                    echo "Logs em: ${PROJECT_DIR}/app.log"
+
+                    # Aguarda health check (máx 90s)
+                    echo "Aguardando ${BASE_URL}/actuator/health..."
                     for i in {1..30}; do
-                        if curl -s --fail ${BASE_URL}/actuator/health > /dev/null; then
-                            echo "Aplicação está UP!"
+                        if curl -s --fail ${BASE_URL}/actuator/health > /dev/null 2>&1; then
+                            echo "APLICAÇÃO ESTÁ NO AR E SAUDÁVEL!"
                             break
                         fi
-                        echo "Tentativa $i/30... ainda não respondeu"
+                        if [ $i -eq 30 ]; then
+                            echo "TIMEOUT: aplicação não subiu!"
+                            echo "=== LOG DA APLICAÇÃO ==="
+                            tail -50 app.log
+                            echo "=== FIM DO LOG ==="
+                            exit 1
+                        fi
+                        echo "Tentativa $i/30... aguardando"
                         sleep 3
                     done
-                    
-                    # Verificação final
-                    curl --fail ${BASE_URL}/actuator/health || exit 1
                 '''
             }
         }
 
         stage('Run Postman/Newman API Tests') {
             steps {
-                echo 'Executando testes de API com Newman (Postman)...'
+                echo 'Executando testes de API com Newman...'
                 sh '''
-                    # Instala newman + reporter bonito (só na primeira vez, depois é cacheado)
+                    # Instala newman globalmente
                     npm install -g newman newman-reporter-htmlextra
-                    
-                    cd blue-bank
-                    
-                    # Executa a coleção com relatório HTML lindo
-                    newman run ../postman/bluebank-collection.json \
+
+                    # Executa a coleção do Postman
+                    newman run ${POSTMAN_DIR}/bluebank-collection.json \
                         --env-var baseUrl=${BASE_URL} \
                         --reporters cli,htmlextra \
                         --reporter-htmlextra-export newman-report.html \
                         --reporter-htmlextra-title "BlueBank API - Testes de Integração" \
-                        --reporter-htmlextra-browserTitle "BlueBank Tests" \
-                        --timeout-request 10000 \
-                        --delay-request 500
+                        --timeout-request 15000 \
+                        --delay-request 300
                 '''
             }
             post {
@@ -65,41 +87,37 @@ pipeline {
                         allowMissing: false,
                         alwaysLinkToLastBuild: true,
                         keepAll: true,
-                        reportDir: 'blue-bank',
+                        reportDir: '.',
                         reportFiles: 'newman-report.html',
-                        reportName: 'Relatório de Testes de API (Postman)',
-                        reportTitles: 'BlueBank API Tests'
+                        reportName: 'Relatório de Testes de API (Postman)'
                     ])
-                    
-                    archiveArtifacts artifacts: 'blue-bank/app.log', allowEmptyArchive: true
+                    archiveArtifacts artifacts: "${PROJECT_DIR}/app.log", allowEmptyArchive: true
                 }
             }
         }
 
         stage('Unit Tests') {
             steps {
-                echo 'Executando testes unitários...'
-                dir('blue-bank') {
+                dir("${PROJECT_DIR}") {
                     sh '${MAVEN_CMD} test'
                 }
             }
             post {
                 always {
-                    junit 'blue-bank/target/surefire-reports/*.xml'
+                    junit '${PROJECT_DIR}/target/surefire-reports/*.xml'
                 }
             }
         }
 
         stage('Package') {
             steps {
-                echo 'Gerando JAR da aplicação...'
-                dir('blue-bank') {
+                dir("${PROJECT_DIR}") {
                     sh '${MAVEN_CMD} package -DskipTests'
                 }
             }
             post {
                 success {
-                    archiveArtifacts artifacts: 'blue-bank/target/*.jar', fingerprint: true
+                    archiveArtifacts artifacts: '${PROJECT_DIR}/target/*.jar', fingerprint: true
                 }
             }
         }
@@ -108,24 +126,20 @@ pipeline {
     post {
         always {
             echo 'Finalizando pipeline...'
-            
             sh '''
-                if [ -f blue-bank/spring-boot.pid ]; then
-                    kill $(cat blue-bank/spring-boot.pid) || true
-                    rm -f blue-bank/spring-boot.pid
+                if [ -f ${PROJECT_DIR}/spring-boot.pid ]; then
+                    kill $(cat ${PROJECT_DIR}/spring-boot.pid) || true
+                    rm -f ${PROJECT_DIR}/spring-boot.pid
                 fi
-                
-                # Mata qualquer processo na porta 8080 (segurança extra)
-                lsof -ti:8080 | xargs kill -9 || true
+                lsof -ti:${APP_PORT} | xargs kill -9 || true
             '''
-            
-            cleanWs(cleanWhenFailure: true, cleanWhenUnstable: true)
+            cleanWs()
         }
         success {
-            echo 'SUCESSO TOTAL! Todos os testes (unitários + API) passaram!'
+            echo 'SUCESSO TOTAL! Build + testes unitários + API 100% verdes!'
         }
         failure {
-            echo 'FALHA! Veja o relatório de testes de API acima para detalhes.'
+            echo 'FALHA! Veja o relatório de testes de API e o log da aplicação.'
         }
     }
 }

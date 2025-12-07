@@ -66,21 +66,40 @@ pipeline {
 
         stage('Run Postman/Newman API Tests') {
             steps {
-                echo 'Executando testes de API com Newman...'
+                echo 'Instalando Node.js + Newman automaticamente...'
                 sh '''
-                    # Instala newman globalmente
+                    NODE_VERSION="20.18.0"
+                    NODE_DIR="node-v${NODE_VERSION}-linux-x64"
+                    NODE_TAR="${NODE_DIR}.tar.xz"
+
+                    if [ ! -d "${NODE_DIR}" ]; then
+                        echo "Baixando Node.js ${NODE_VERSION}..."
+                        curl -L -O https://nodejs.org/dist/v${NODE_VERSION}/${NODE_TAR}
+                        tar -xf ${NODE_TAR}
+                        rm ${NODE_TAR}
+                    fi
+
+                    export PATH="${WORKSPACE}/${NODE_DIR}/bin:$PATH"
+
+                    node --version
+                    npm --version
+
                     npm install -g newman newman-reporter-htmlextra
 
-                    # Executa a coleção do Postman
+                    echo "Executando coleção Postman..."
                     newman run ${POSTMAN_DIR}/bluebank-collection.json \
                         --env-var baseUrl=${BASE_URL} \
                         --reporters cli,htmlextra \
                         --reporter-htmlextra-export newman-report.html \
                         --reporter-htmlextra-title "BlueBank API - Testes de Integração" \
+                        --reporter-htmlextra-browserTitle "BlueBank Tests" \
                         --timeout-request 15000 \
-                        --delay-request 300
+                        --delay-request 500 \
+                        --bail  # para o teste no primeiro erro (opcional, mas recomendado)
+
+                    echo "Testes de API concluídos!"
                 '''
-            }
+    }
             post {
                 always {
                     publishHTML(target: [

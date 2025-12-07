@@ -1,9 +1,8 @@
 package com.inatel.blue_bank.mapper;
 
-import com.inatel.blue_bank.model.dto.AccountRequestSaveDTO;
-import com.inatel.blue_bank.model.dto.AccountResponseDTO;
+import com.inatel.blue_bank.model.dto.account.AccountRequestSaveDTO;
+import com.inatel.blue_bank.model.dto.account.AccountResponseDTO;
 import com.inatel.blue_bank.model.entity.Account;
-import com.inatel.blue_bank.repository.CustomerRepository;
 import com.inatel.blue_bank.service.CustomerService;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;

@@ -1,4 +1,4 @@
-package com.inatel.blue_bank.model.dto;
+package com.inatel.blue_bank.model.dto.transaction;
 
 import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.NotNull;

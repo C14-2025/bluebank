@@ -1,4 +1,6 @@
-package com.inatel.blue_bank.model.dto;
+package com.inatel.blue_bank.model.dto.account;
+
+import com.inatel.blue_bank.model.dto.customer.CustomerResponseDTO;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;

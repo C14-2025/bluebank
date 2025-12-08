@@ -19,34 +19,43 @@ pipeline {
             }
         }
 
+        stage('Start PostgreSQL') {
+            steps {
+                echo 'Subindo PostgreSQL com Docker...'
+                sh '''
+                    docker stop postgres-ci || true
+                    docker rm postgres-ci || true
+            
+                    docker run -d \
+                        --name postgres-ci \
+                        -e POSTGRES_DB=postgres \
+                        -e POSTGRES_USER=postgres \
+                        -e POSTGRES_PASSWORD=123 \
+                        -p 5432:5432 \
+                        postgres:15-alpine
+            
+                    echo "Aguardando PostgreSQL aceitar conexões..."
+                    for i in {1..30}; do
+                        if docker exec postgres-ci pg_isready -h localhost -p 5432 > /dev/null 2>&1; then
+                            echo "PostgreSQL está PRONTO!"
+                            break
+                        fi
+                        sleep 2
+                    done
+                '''
+            }
+        }
         stage('Start Application') {
             steps {
                 echo 'Iniciando a aplicação Spring Boot...'
                 sh '''
                     cd ${PROJECT_DIR}
-
-                    # Limpa PID antigo
                     rm -f spring-boot.pid
 
-                    # Inicia a aplicação
                     echo "Iniciando Spring Boot em background..."
-                    nohup ${MAVEN_CMD} spring-boot:run \
-                        -Dserver.port=${APP_PORT} \
-                        -Dspring.datasource.url=jdbc:h2:mem:testdb;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE \
-                        -Dspring.datasource.driver-class-name=org.h2.Driver \
-                        -Dspring.datasource.username=sa \
-                        -Dspring.datasource.password= \
-                        -Dspring.jpa.database-platform=org.hibernate.dialect.H2Dialect \
-                        -Dspring.jpa.hibernate.ddl-auto=create-drop \
-                        -Dspring.h2.console.enabled=true \
-                        -Dspring.sql.init.mode=embedded \
-                        > app.log 2>&1 &
+                    nohup ${MAVEN_CMD} spring-boot:run -Dserver.port=${APP_PORT} > app.log 2>&1 &
                     echo $! > spring-boot.pid
 
-                    echo "Aplicação iniciada com PID $(cat spring-boot.pid)"
-                    echo "Logs em: ${PROJECT_DIR}/app.log"
-
-                    # Aguarda health check (máx 90s)
                     echo "Aguardando ${BASE_URL}/actuator/health..."
                     for i in {1..30}; do
                         if curl -s --fail ${BASE_URL}/actuator/health > /dev/null 2>&1; then
@@ -92,15 +101,16 @@ pipeline {
                     npm install -g newman newman-reporter-htmlextra
 
                     echo "Executando coleção Postman..."
-                    newman run ${POSTMAN_DIR}/bluebank-collection.json -r htmlextra \
+                    newman run ${POSTMAN_DIR}/bluebank-collection.json \
                         --env-var baseUrl=${BASE_URL} \
                         --reporters cli,htmlextra \
                         --reporter-htmlextra-export newman-report.html \
                         --reporter-htmlextra-title "BlueBank API - Testes de Integração" \
                         --reporter-htmlextra-browserTitle "BlueBank Tests" \
-                        --reporter-htmlextra-inlineAssets true \
                         --timeout-request 15000 \
                         --delay-request 500 \
+                        --bail  # para o teste no primeiro erro (opcional, mas recomendado)
+
                     echo "Testes de API concluídos!"
                 '''
     }

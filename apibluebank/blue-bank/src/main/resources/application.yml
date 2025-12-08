@@ -2,9 +2,9 @@ spring:
   application:
     name: bluebankapi
   datasource:
-    url: jdbc:postgresql://localhost:5432/bluebank # localhost:{postgreSQL-port}/{database-name}
+    url: jdbc:postgresql://localhost:5432/postgres # localhost:{postgreSQL-port}/{database-name}
     username: postgres
-    password: postgres
+    password: 1401
     driver-class-name: org.postgresql.Driver
   jpa:
     hibernate:

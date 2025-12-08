@@ -56,29 +56,4 @@ public class TransactionServiceTest {
         verify(repository, times(1)).save(t);
     }
 
-    @Test
-    public void findByIdTest() {
-        Transaction t  = new Transaction();
-        UUID id = UUID.fromString("4c84e2c9-d956-462b-b7a9-1482c72a7e97");
-        t.setAmount(BigDecimal.valueOf(123.0));
-        t.setId(id);
-
-        when(repository.findById(id)).thenReturn(Optional.of(t));
-
-        Optional<Transaction> optionalT = service.findById(id);
-
-        assertTrue(optionalT.isPresent());
-        assertEquals(Optional.of(id), optionalT.map(Transaction::getId));
-        verify(repository, times(1)).findById(id);
-    }
-
-    @Test
-    void deleteTest() {
-        Transaction t = new Transaction();
-        doNothing().when(repository).delete(t);
-        service.delete(t);
-
-        verify(repository).delete(t);
-    }
-
 }

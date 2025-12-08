@@ -126,7 +126,7 @@ pipeline {
             }
             post {
                 always {
-                    junit '${PROJECT_DIR}/target/surefire-reports/*.xml'
+                    junit 'apibluebank/blue-bank/target/surefire-reports/*.xml'
                 }
             }
         }

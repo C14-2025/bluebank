@@ -23,14 +23,6 @@ pipeline {
             steps {
                 echo 'Iniciando a aplicação Spring Boot...'
                 sh '''
-                    # Verifica se o diretório existe
-                    if [ ! -d "${PROJECT_DIR}" ]; then
-                        echo "ERRO: Diretório ${PROJECT_DIR} não encontrado!"
-                        pwd
-                        ls -la
-                        exit 1
-                    fi
-
                     cd ${PROJECT_DIR}
 
                     # Limpa PID antigo
@@ -90,7 +82,7 @@ pipeline {
                     npm install -g newman newman-reporter-htmlextra
 
                     echo "Executando coleção Postman..."
-                    newman run ${POSTMAN_DIR}/bluebank-collection.json \
+                    newman run ${POSTMAN_DIR}/bluebank-collection.json -r htmlextra \
                         --env-var baseUrl=${BASE_URL} \
                         --reporters cli,htmlextra \
                         --reporter-htmlextra-export newman-report.html \
@@ -98,8 +90,6 @@ pipeline {
                         --reporter-htmlextra-browserTitle "BlueBank Tests" \
                         --timeout-request 15000 \
                         --delay-request 500 \
-                        --bail  # para o teste no primeiro erro (opcional, mas recomendado)
-
                     echo "Testes de API concluídos!"
                 '''
     }

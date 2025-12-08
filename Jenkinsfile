@@ -84,12 +84,9 @@ pipeline {
                     echo "Executando coleção Postman..."
                     newman run ${POSTMAN_DIR}/bluebank-collection.json -r htmlextra \
                         --env-var baseUrl=${BASE_URL} \
-                        --reporters cli,htmlextra \
-                        --reporter-htmlextra-export newman-report.html \
-                        --reporter-htmlextra-title "BlueBank API - Testes de Integração" \
-                        --reporter-htmlextra-browserTitle "BlueBank Tests" \
-                        --timeout-request 15000 \
-                        --delay-request 500 \
+                        --reporters cli,html \
+                        --reporter-html-export newman-report.html \
+                        --reporter-html-template ${WORKSPACE}/htmlextra-template.hbs || exit 1
                     echo "Testes de API concluídos!"
                 '''
     }

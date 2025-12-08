@@ -15,6 +15,7 @@ pipeline {
             steps {
                 echo 'Baixando código do repositório...'
                 checkout scm
+                sh 'chmod +x apibluebank/blue-bank/mvnw'
             }
         }
 

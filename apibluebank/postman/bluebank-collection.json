@@ -362,14 +362,6 @@
 					"response": []
 				},
 				{
-					"name": "Search",
-					"request": {
-						"method": "GET",
-						"header": []
-					},
-					"response": []
-				},
-				{
 					"name": "Delete",
 					"request": {
 						"method": "DELETE",

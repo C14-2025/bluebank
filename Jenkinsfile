@@ -139,7 +139,7 @@ pipeline {
             }
             post {
                 success {
-                    archiveArtifacts artifacts: '${PROJECT_DIR}/target/*.jar', fingerprint: true
+                    archiveArtifacts artifacts: 'apibluebank/blue-bank/target/*.jar', fingerprint: true, allowEmptyArchive: false
                 }
             }
         }

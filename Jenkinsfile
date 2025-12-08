@@ -30,7 +30,16 @@ pipeline {
 
                     # Inicia a aplicação
                     echo "Iniciando Spring Boot em background..."
-                    nohup ${MAVEN_CMD} spring-boot:run -Dserver.port=${APP_PORT} > app.log 2>&1 &
+                    nohup ${MAVEN_CMD} spring-boot:run \
+                        -Dserver.port=${APP_PORT} \
+                        -Dspring.datasource.url=jdbc:h2:mem:testdb;DB_CLOSE_DELAY=-1 \
+                        -Dspring.datasource.driver-class-name=org.h2.Driver \
+                        -Dspring.datasource.username=sa \
+                        -Dspring.datasource.password= \
+                        -Dspring.jpa.database-platform=org.hibernate.dialect.H2Dialect \
+                        -Dspring.jpa.hibernate.ddl-auto=create-drop \
+                        -Dspring.sql.init.mode=embedded \
+                        > app.log 2>&1 &
                     echo $! > spring-boot.pid
 
                     echo "Aplicação iniciada com PID $(cat spring-boot.pid)"

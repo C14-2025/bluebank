@@ -151,6 +151,9 @@ pipeline {
                         reportDir: "${PROJECT_DIR}/target",
                         reportFiles: 'newman-report.html',
                         reportName: 'API Test Report',
+                        reportName: 'API Test Results',
+                        alwaysLinkToLastBuild: true,
+                        allowMissing: true,
                         keepAll: true
                     ])
                 }

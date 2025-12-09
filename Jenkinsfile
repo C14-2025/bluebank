@@ -1,4 +1,3 @@
-// Jenkinsfile (na raiz do repositório)
 pipeline {
     agent any
 
@@ -8,6 +7,12 @@ pipeline {
         BASE_URL = "http://localhost:${APP_PORT}"
         PROJECT_DIR = 'apibluebank/blue-bank'
         POSTMAN_DIR = 'apibluebank/postman'
+        POSTGRES_IMAGE = 'postgres:15-alpine'
+        POSTGRES_CONTAINER = 'bluebank-postgres'
+        POSTGRES_DB = 'bluebank'
+        POSTGRES_USER = 'postgres'
+        POSTGRES_PASSWORD = 'postgres'
+        POSTGRES_PORT = '5432'
     }
 
     stages {
@@ -19,6 +24,47 @@ pipeline {
             }
         }
 
+        stage('Setup PostgreSQL') {
+            steps {
+                echo 'Configurando banco de dados PostgreSQL...'
+                sh '''
+                    # Parar container se já existir
+                    docker stop ${POSTGRES_CONTAINER} 2>/dev/null || true
+                    docker rm ${POSTGRES_CONTAINER} 2>/dev/null || true
+                    
+                    # Iniciar novo container PostgreSQL
+                    docker run -d \
+                        --name ${POSTGRES_CONTAINER} \
+                        -e POSTGRES_DB=${POSTGRES_DB} \
+                        -e POSTGRES_USER=${POSTGRES_USER} \
+                        -e POSTGRES_PASSWORD=${POSTGRES_PASSWORD} \
+                        -p ${POSTGRES_PORT}:5432 \
+                        ${POSTGRES_IMAGE}
+                    
+                    # Aguardar PostgreSQL iniciar
+                    echo "Aguardando PostgreSQL iniciar..."
+                    sleep 10
+                    
+                    # Verificar se PostgreSQL está rodando
+                    for i in {1..10}; do
+                        if docker exec ${POSTGRES_CONTAINER} pg_isready -U ${POSTGRES_USER}; then
+                            echo "PostgreSQL está pronto!"
+                            break
+                        fi
+                        echo "Tentativa $i/10... aguardando PostgreSQL"
+                        sleep 5
+                    done
+                    
+                    # Executar scripts SQL para criar tabelas
+                    echo "Criando tabelas no banco de dados..."
+                    if [ -f "${WORKSPACE}/sql-scripts.txt" ]; then
+                        docker exec -i ${POSTGRES_CONTAINER} psql -U ${POSTGRES_USER} -d ${POSTGRES_DB} < "${WORKSPACE}/sql-scripts.txt"
+                    else
+                        echo "Arquivo sql-scripts.txt não encontrado. As tabelas serão criadas pelo Hibernate."
+                    fi
+                '''
+            }
+        }
 
         stage('Start Application') {
             steps {
@@ -26,12 +72,10 @@ pipeline {
                 sh '''
                     cd ${PROJECT_DIR}
                     rm -f spring-boot.pid
-
-                    echo "Iniciando Spring Boot em background..."
-                    nohup ${MAVEN_CMD} spring-boot:run \
-                        -Dserver.port=${APP_PORT} \
-                        -Dspring.profiles.active=test \
-                        > app.log 2>&1 &
+                    
+                    # Garantir que o perfil de teste não sobrescreva o PostgreSQL
+                    echo "Iniciando Spring Boot com configuração PostgreSQL..."
+                    nohup ${MAVEN_CMD} spring-boot:run -Dserver.port=${APP_PORT} > app.log 2>&1 &
                     echo $! > spring-boot.pid
 
                     echo "Aguardando ${BASE_URL}/actuator/health..."
@@ -43,7 +87,7 @@ pipeline {
                         if [ $i -eq 30 ]; then
                             echo "TIMEOUT: aplicação não subiu!"
                             echo "=== LOG DA APLICAÇÃO ==="
-                            tail -50 app.log
+                            tail -100 app.log
                             echo "=== FIM DO LOG ==="
                             exit 1
                         fi
@@ -86,12 +130,12 @@ pipeline {
                         --reporter-htmlextra-title "BlueBank API - Testes de Integração" \
                         --reporter-htmlextra-browserTitle "BlueBank Tests" \
                         --timeout-request 15000 \
-                        --delay-request 500 \
-                        --bail  # para o teste no primeiro erro (opcional, mas recomendado)
+                        --delay-request 1000 \
+                        --verbose
 
                     echo "Testes de API concluídos!"
                 '''
-    }
+            }
             post {
                 always {
                     publishHTML(target: [
@@ -138,11 +182,16 @@ pipeline {
         always {
             echo 'Finalizando pipeline...'
             sh '''
+                # Parar aplicação Spring Boot
                 if [ -f ${PROJECT_DIR}/spring-boot.pid ]; then
                     kill $(cat ${PROJECT_DIR}/spring-boot.pid) || true
                     rm -f ${PROJECT_DIR}/spring-boot.pid
                 fi
                 lsof -ti:${APP_PORT} | xargs kill -9 || true
+                
+                # Parar container PostgreSQL
+                docker stop ${POSTGRES_CONTAINER} 2>/dev/null || true
+                docker rm ${POSTGRES_CONTAINER} 2>/dev/null || true
             '''
             cleanWs()
         }

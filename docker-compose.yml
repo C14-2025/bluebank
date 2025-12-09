@@ -1,0 +1,17 @@
+version: '3.8'
+services:
+  postgres:
+    image: postgres:15-alpine
+    container_name: bluebank-postgres
+    environment:
+      POSTGRES_DB: bluebank
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./apibluebank/blue-bank/sql-scripts.txt:/docker-entrypoint-initdb.d/init.sql
+
+volumes:
+  postgres_data:

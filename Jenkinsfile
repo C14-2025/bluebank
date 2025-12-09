@@ -17,7 +17,7 @@ pipeline {
 
         stage('Build') {
             steps {
-                echo 'Iniciando a aplicação Spring Boot...'
+                echo '🔨 Compilando projeto...'
                 dir("${PROJECT_DIR}"){
                     sh '${MAVEN_CMD} clean compile '
                 }
@@ -25,6 +25,7 @@ pipeline {
         }
         stage('Unit Tests') {
             steps {
+                echo '🧪 Executando testes unitários...'
                 dir("${PROJECT_DIR}") {
                     sh '${MAVEN_CMD} test'
                 }
@@ -35,9 +36,18 @@ pipeline {
                 }
             }
         }
-
+        stage('Quality Checks') {
+            steps {
+                echo '📊 Verificando qualidade do código...'
+                dir("${PROJECT_DIR}") {
+                    sh "${MVNW_CMD} checkstyle:check || true"
+                    sh "${MVNW_CMD} spotbugs:check || true"
+                }
+            }
+        }
         stage('Package') {
             steps {
+                echo '📦 Gerando pacote...'
                 dir("${PROJECT_DIR}") {
                     sh '${MAVEN_CMD} package -DskipTests'
                 }
@@ -56,10 +66,10 @@ pipeline {
             cleanWs()
         }
         success {
-            echo 'SUCESSO TOTAL! Build + testes unitários + API 100% verdes!'
+            echo '🎉 SUCESSO TOTAL! Pipeline executada com sucesso!'
         }
         failure {
-            echo 'FALHA! Veja o relatório de testes de API e o log da aplicação.'
+            echo '❌ FALHA! Verifique os logs para mais detalhes.'
         }
     }
 }

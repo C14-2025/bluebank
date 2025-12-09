@@ -25,26 +25,34 @@ pipeline {
         }
         stage('API Tests') {
             steps {
-                dir("${PROJECT_DIR}") {
+                script {
                     sh '''
-                        curl -fsSL https://deb.nodesource.com/setup_18.x | bash -
-                        apt-get install -y nodejs
+                        curl -fsSL https://deb.nodesource.com/setup_18.x | sudo -E bash -
+                        sudo apt-get install -y nodejs
                     '''
                     sh 'node --version'
                     sh 'npm --version'
 
-                    sh 'nohup ${MAVEN_CMD} spring-boot:run &'
+                    dir("${PROJECT_DIR}") {
+                        sh 'nohup ${MAVEN_CMD} spring-boot:run > app.log 2>&1 &'
+                        echo "Aplicação iniciada em background"
+                    }
+                    
                     sleep(time: 30, unit: 'SECONDS')
+                    
+                    sh 'curl -f http://localhost:8080/actuator/health || echo "Aplicação não respondeu"'
             
-                    sh 'npm install -g newman'
-                    sh 'newman run bluebank-collection.json --reporters cli,junit --reporter-junit-export newman-report.xml'
+                    dir("apibluebank/postman") {
+                        sh 'npm install -g newman'
+                        sh 'newman run bluebank-collection.json --reporters cli,junit --reporter-junit-export newman-report.xml'
+                    }
             
-                    sh 'pkill -f "spring-boot:run"'
+                    sh 'pkill -f "spring-boot:run" || true'
                 }
             }
             post {
                 always {
-                    junit 'newman-report.xml'
+                    junit 'apibluebank/postman/newman-report.xml'
                 }
             }
         }

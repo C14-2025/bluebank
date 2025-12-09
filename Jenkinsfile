@@ -23,30 +23,33 @@ pipeline {
             steps {
                 echo 'Iniciando a aplicação Spring Boot...'
                 sh '''
+                    set -e
                     cd ${PROJECT_DIR}
                     rm -f spring-boot.pid
 
                     echo "Iniciando Spring Boot em background..."
                     nohup ${MAVEN_CMD} spring-boot:run \
                         -Dspring-boot.run.profiles=test \
-                        -Dserver.port=${APP_PORT} > app.log 2>&1 &
+                        -Dserver.port=${APP_PORT} \
+                        > app.log 2>&1 &
 
                     echo "Aguardando ${BASE_URL}/actuator/health..."
-                    for i in {1..30}; do
-                        if curl -s --fail ${BASE_URL}/actuator/health > /dev/null 2>&1; then
+                    n=0
+                    until [ $n -ge 30 ]; do
+                        if curl -s --fail ${BASE_URL}/actuator/health > /dev/null; then
                             echo "APLICAÇÃO ESTÁ NO AR E SAUDÁVEL!"
-                            break
+                            cat app.log | tail -50
+                            exit 0
                         fi
-                        if [ $i -eq 30 ]; then
-                            echo "TIMEOUT: aplicação não subiu!"
-                            echo "=== LOG DA APLICAÇÃO ==="
-                            tail -50 app.log
-                            echo "=== FIM DO LOG ==="
-                            exit 1
-                        fi
-                        echo "Tentativa $i/30... aguardando"
+                        n=$((n+1))
+                        echo "Tentativa $n/30... aguardando 3s"
                         sleep 3
                     done
+                    echo "TIMEOUT: aplicação não subiu!"
+                    echo "=== LOG COMPLETO DA APLICAÇÃO ==="
+                    cat app.log || true
+                    echo "=== FIM DO LOG ==="
+                    exit 1
                 '''
             }
         }

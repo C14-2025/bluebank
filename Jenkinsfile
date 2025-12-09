@@ -48,6 +48,20 @@ pipeline {
                 }
             }
         }
+    
+        stage('Code Quality') {
+            steps {
+                script {
+                    sh '''
+                        ${MAVEN_CMD} checkstyle:check
+                        ${MAVEN_CMD} pmd:check
+
+                        // verifica dependencias vulneraveis
+                        ${MAVEN_CMD} org.owasp:dependency-check-maven:check
+                    '''
+                }
+            }
+        }
     }
 
     post {

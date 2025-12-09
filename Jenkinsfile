@@ -66,6 +66,42 @@ pipeline {
                 }
             }
         }
+                stage('API Tests') {
+            steps {
+                script {
+                    sh '''
+                        curl -L -o node-v18.17.0-linux-x64.tar.xz https://nodejs.org/dist/v18.17.0/node-v18.17.0-linux-x64.tar.xz
+                        tar -xf node-v18.17.0-linux-x64.tar.xz
+                        export PATH="$PWD/node-v18.17.0-linux-x64/bin:$PATH"
+                        node --version
+                        npm --version
+                    '''
+                    
+                    dir("${PROJECT_DIR}") {
+                        sh 'nohup ${MAVEN_CMD} spring-boot:run > app.log 2>&1 &'
+                        echo "Aplicação iniciada em background"
+                    }
+                    
+                    sleep(time: 35, unit: 'SECONDS')
+                    
+                    sh '''
+                        npm install -g newman
+                        
+                        newman run apibluebank/postman/bluebank-collection.json \
+                            --reporters cli,junit \
+                            --reporter-junit-export apibluebank/postman/newman-report.xml \
+                            --timeout-request 5000
+                    '''
+                    
+                    sh 'pkill -f "spring-boot:run" 2>/dev/null || true'
+                }
+            }
+            post {
+                always {
+                    junit 'apibluebank/postman/newman-report.xml'
+                }
+            }
+        }
         stage('Unit Tests') {
             steps {
                 dir("${PROJECT_DIR}") {

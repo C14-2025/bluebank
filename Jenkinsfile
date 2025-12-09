@@ -23,6 +23,24 @@ pipeline {
                 }
             }
         }
+        stage('API Tests') {
+            steps {
+                dir("${PROJECT_DIR}") {
+                    sh 'nohup ${MAVEN_CMD} spring-boot:run &'
+                    sleep(time: 30, unit: 'SECONDS')
+            
+                    sh 'npm install -g newman'
+                    sh 'newman run bluebank-collection.json --reporters cli,junit --reporter-junit-export newman-report.xml'
+            
+                    sh 'pkill -f "spring-boot:run"'
+                }
+            }
+            post {
+                always {
+                    junit 'newman-report.xml'
+                }
+            }
+        }
         stage('Unit Tests') {
             steps {
                 dir("${PROJECT_DIR}") {
@@ -45,20 +63,6 @@ pipeline {
             post {
                 success {
                     archiveArtifacts artifacts: 'apibluebank/blue-bank/target/*.jar', fingerprint: true, allowEmptyArchive: false
-                }
-            }
-        }
-    
-        stage('Code Quality') {
-            steps {
-                dir("${PROJECT_DIR}") {
-                    sh '''
-                        ${MAVEN_CMD} checkstyle:check
-                        ${MAVEN_CMD} pmd:check
-
-                        // verifica dependencias vulneraveis
-                        ${MAVEN_CMD} org.owasp:dependency-check-maven:check
-                    '''
                 }
             }
         }

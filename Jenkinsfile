@@ -277,7 +277,6 @@ pipeline {
                 // Mostra erros críticos
                 sh '''
                     echo "=== ERROS ENCONTRADOS ==="
-                    grep -i "error\|exception\|fail" apibluebank/blue-bank/application.log 2>/dev/null | tail -20 || echo "Nenhum log disponível"
                     echo "========================"
                 '''
             }

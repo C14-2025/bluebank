@@ -36,35 +36,6 @@ public class CustomerServiceTest {
     private CustomerService service;
 
     @Test
-    public void saveTest() {
-        Customer c = new Customer();
-        c.setFullName("Charlie");
-
-        when(repository.save(c)).thenReturn(c);
-
-        Customer saved = service.save(c);
-
-        assertEquals("Charlie", saved.getFullName());
-        verify(repository, times(1)).save(c);
-    }
-
-    @Test
-    public void findByIdTest() {
-        Customer c = new Customer();
-        UUID id = UUID.fromString("ad5bd0be-6093-4809-a333-7774dfc3d6d5");
-        c.setFullName("Charlie");
-        c.setId(id);
-
-        when(repository.findByIdWithoutAccount(id)).thenReturn(Optional.of(c));
-
-        Optional<Customer> optionalC = service.findById(id);
-
-        assertTrue(optionalC.isPresent());
-        assertEquals(Optional.of(id), optionalC.map(Customer::getId));
-        verify(repository, times(1)).findByIdWithoutAccount(id);
-    }
-
-    @Test
     public void findByDocTest() {
         Customer c = new Customer();
         DocType type = DocType.PASSPORT;

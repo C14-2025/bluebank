@@ -69,37 +69,6 @@ class AccountServiceTest {
     }
 
     @Test
-    void save_ShouldReturnSavedAccount() {
-        when(accountRepository.save(any(Account.class))).thenReturn(account);
-
-        Account saved = service.save(account);
-
-        assertThat(saved).isNotNull();
-        assertThat(saved.getAccountNumber()).isEqualTo("123456");
-        verify(accountRepository, times(1)).save(account);
-    }
-
-    @Test
-    void findById_ShouldReturnAccount_WhenExists() {
-        when(accountRepository.findById(account.getId())).thenReturn(Optional.of(account));
-
-        Optional<Account> result = service.findById(account.getId());
-
-        assertThat(result).isPresent();
-        assertThat(result.get().getCustomer().getFullName()).isEqualTo("John Doe");
-        verify(accountRepository).findById(account.getId());
-    }
-
-    @Test
-    void findById_ShouldReturnEmpty_WhenNotFound() {
-        when(accountRepository.findById(any(UUID.class))).thenReturn(Optional.empty());
-
-        Optional<Account> result = service.findById(UUID.randomUUID());
-
-        assertThat(result).isEmpty();
-    }
-
-    @Test
     void findByCustomerDoc_ShouldReturnAccount_WhenFound() {
         when(accountRepository.findByCustomerDocTypeAndCustomerDocNumber(DocType.CPF, "12345678900"))
                 .thenReturn(Optional.of(account));

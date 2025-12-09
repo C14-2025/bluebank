@@ -19,36 +19,13 @@ pipeline {
             }
         }
 
-        stage('Start PostgreSQL') {
-            steps {
-                echo 'Subindo PostgreSQL com Docker...'
-                sh '''
-                    docker stop postgres-ci || true
-                    docker rm postgres-ci || true
-            
-                    docker run -d \
-                        --name postgres-ci \
-                        -e POSTGRES_DB=postgres \
-                        -e POSTGRES_USER=postgres \
-                        -e POSTGRES_PASSWORD=123 \
-                        -p 5432:5432 \
-                        postgres:15-alpine
-            
-                    echo "Aguardando PostgreSQL aceitar conexões..."
-                    for i in {1..30}; do
-                        if docker exec postgres-ci pg_isready -h localhost -p 5432 > /dev/null 2>&1; then
-                            echo "PostgreSQL está PRONTO!"
-                            break
-                        fi
-                        sleep 2
-                    done
-                '''
-            }
-        }
+
         stage('Start Application') {
             steps {
                 echo 'Iniciando a aplicação Spring Boot...'
                 sh '''
+                    docker-compose up -d postgres
+                    docker-compose exec -T postgres psql -U postgres -d postgres -f sql-scripts.txt
                     cd ${PROJECT_DIR}
                     rm -f spring-boot.pid
 

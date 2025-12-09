@@ -53,6 +53,36 @@ pipeline {
             }
         }
 
+        stage('Debug Application Startup') {
+            steps {
+                script {
+                    dir("${PROJECT_DIR}") {
+                        sh '''
+                            echo "=== TESTANDO INICIALIZAÇÃO RÁPIDA ==="
+                            
+                            # Tentativa rápida de iniciar
+                            timeout 60 ./mvnw spring-boot:run \
+                                -Dspring.datasource.url=jdbc:h2:mem:testdb \
+                                -Dspring.datasource.username=sa \
+                                -Dspring.datasource.password= \
+                                -Dserver.port=8082 \
+                                -Dspring.jpa.hibernate.ddl-auto=create-drop \
+                                --quiet &
+                            
+                            sleep 30
+                            
+                            if curl -s http://localhost:8082/actuator/health 2>/dev/null; then
+                                echo "✅ CONSEGUIMOS! App funciona com H2"
+                                pkill -f "spring-boot:run"
+                            else
+                                echo "❌ Ainda não. Verificando logs..."
+                                find . -name "*.log" -exec tail -50 {} \;
+                            fi
+                        '''
+                    }
+                }
+            }
+        }
         stage('API Tests') {
             steps {
                 script {

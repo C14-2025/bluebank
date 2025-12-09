@@ -19,6 +19,54 @@ pipeline {
             }
         }
 
+        stage('Start PostgreSQL') {
+            steps {
+                echo 'Iniciando PostgreSQL via Docker...'
+                sh '''
+                    # Remove container antigo (se existir)
+                    docker stop bluebank-db 2>/dev/null || true
+                    docker rm bluebank-db 2>/dev/null || true
+
+                    # Roda o container PostgreSQL
+                    docker run -d \
+                        --name bluebank-db \
+                        -e POSTGRES_DB=postgres \
+                        -e POSTGRES_USER=postgres \
+                        -e POSTGRES_PASSWORD=123 \
+                        -p 5432:5432 \
+                        postgres:15-alpine
+
+                    # Aguarda ficar pronto (pg_isready é o jeito mais confiável)
+                    echo "Aguardando PostgreSQL aceitar conexões..."
+                    timeout=60
+                    until docker exec bluebank-db pg_isready -U postgres -h localhost | grep -q "accepting connections"; do
+                        timeout=$((timeout+1))
+                        if [ $timeout -gt 40 ]; then
+                            echo "Timeout: PostgreSQL não subiu!"
+                            docker logs bluebank-db
+                            exit 1
+                        fi
+                        sleep 2
+                    done
+                    echo "PostgreSQL está pronto!"
+                '''
+            }
+        }
+
+        stage('Create Database Schema') {
+            steps {
+                echo 'Criando tabelas no PostgreSQL...'
+                sh '''
+                    # Copia o script SQL que está dentro do projeto
+                    docker cp apibluebank/blue-bank/sql-scripts.txt bluebank-db:/sql-scripts.txt
+                    
+                    # Executa o script
+                    docker exec bluebank-db psql -U postgres -d postgres -f /sql-scripts.txt
+                    
+                    echo "Tabelas criadas com sucesso!"
+                '''
+            }
+        }
 
         stage('Start Application') {
             steps {
@@ -137,6 +185,9 @@ pipeline {
         always {
             echo 'Finalizando pipeline...'
             sh '''
+                docker stop bluebank-db 2>/dev/null || true
+                docker rm bluebank-db 2>/dev/null || true
+
                 if [ -f ${PROJECT_DIR}/spring-boot.pid ]; then
                     kill $(cat ${PROJECT_DIR}/spring-boot.pid) || true
                     rm -f ${PROJECT_DIR}/spring-boot.pid

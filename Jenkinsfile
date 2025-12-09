@@ -27,7 +27,7 @@ pipeline {
             steps {
                 script {
                     sh '''
-                        curl -L -o node-v18.17.0-linux-x64.tar.xz https://nodejs.org/dist/v18.17.0/node-v18.17.0-linux-x64.tar.gz
+                        curl -L -o node-v18.17.0-linux-x64.tar.gz https://nodejs.org/dist/v18.17.0/node-v18.17.0-linux-x64.tar.gz
                         tar -xzf node-v18.17.0-linux-x64.tar.gz
                         export PATH="$PWD/node-v18.17.0-linux-x64/bin:$PATH"
                         node --version

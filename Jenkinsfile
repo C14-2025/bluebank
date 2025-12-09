@@ -28,7 +28,10 @@ pipeline {
                     rm -f spring-boot.pid
 
                     echo "Iniciando Spring Boot em background..."
-                    nohup ${MAVEN_CMD} spring-boot:run -Dserver.port=${APP_PORT} > app.log 2>&1 &
+                    nohup ${MAVEN_CMD} spring-boot:run \
+                        -Dserver.port=${APP_PORT} \
+                        -Dspring.profiles.active=test \
+                        > app.log 2>&1 &
                     echo $! > spring-boot.pid
 
                     echo "Aguardando ${BASE_URL}/actuator/health..."

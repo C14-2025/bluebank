@@ -23,28 +23,14 @@ pipeline {
             steps {
                 echo 'Iniciando a aplicação Spring Boot...'
                 sh '''
-                    # Verifica se o diretório existe
-                    if [ ! -d "${PROJECT_DIR}" ]; then
-                        echo "ERRO: Diretório ${PROJECT_DIR} não encontrado!"
-                        pwd
-                        ls -la
-                        exit 1
-                    fi
-
                     cd ${PROJECT_DIR}
-
-                    # Limpa PID antigo
                     rm -f spring-boot.pid
 
-                    # Inicia a aplicação
                     echo "Iniciando Spring Boot em background..."
-                    nohup ${MAVEN_CMD} spring-boot:run -Dserver.port=${APP_PORT} > app.log 2>&1 &
-                    echo $! > spring-boot.pid
+                    nohup ${MAVEN_CMD} spring-boot:run \
+                        -Dspring-boot.run.profiles=test \
+                        -Dserver.port=${APP_PORT} > app.log 2>&1 &
 
-                    echo "Aplicação iniciada com PID $(cat spring-boot.pid)"
-                    echo "Logs em: ${PROJECT_DIR}/app.log"
-
-                    # Aguarda health check (máx 90s)
                     echo "Aguardando ${BASE_URL}/actuator/health..."
                     for i in {1..30}; do
                         if curl -s --fail ${BASE_URL}/actuator/health > /dev/null 2>&1; then

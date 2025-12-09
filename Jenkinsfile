@@ -8,8 +8,8 @@ pipeline {
     
     environment {
         MAVEN_CMD = './mvnw'
-        PROJECT_DIR = 'apibluebank/blue-bank'        # Caminho do projeto Spring Boot
-        POSTMAN_DIR = 'apibluebank/postman'         # Caminho das collections Postman
+        PROJECT_DIR = 'apibluebank/blue-bank'        
+        POSTMAN_DIR = 'apibluebank/postman'       
         POSTMAN_COLLECTION = '${POSTMAN_DIR}/bluebank-collection.json'
         NEWMAN_REPORT_DIR = 'newman-reports'
         DB_NAME = 'bluebank'
@@ -17,7 +17,7 @@ pipeline {
         DB_PASSWORD = 'postgres'
         DB_HOST = 'localhost'
         DB_PORT = '5432'
-        SQL_SCRIPT = '${PROJECT_DIR}/sql-scripts.txt'  # Script SQL está no projeto
+        SQL_SCRIPT = '${PROJECT_DIR}/sql-scripts.txt'  
     }
     
     stages {

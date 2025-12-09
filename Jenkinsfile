@@ -51,7 +51,7 @@ pipeline {
     
         stage('Code Quality') {
             steps {
-                script {
+                dir("${PROJECT_DIR}") {
                     sh '''
                         ${MAVEN_CMD} checkstyle:check
                         ${MAVEN_CMD} pmd:check

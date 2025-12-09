@@ -26,49 +26,6 @@ pipeline {
         stage('API Tests') {
             steps {
                 script {
-                    echo 'Instalando Node.js e Newman...'
-                    
-                    sh '''
-                        # Baixar Node.js diretamente
-                        wget https://nodejs.org/dist/v18.17.0/node-v18.17.0-linux-x64.tar.xz
-                        tar -xf node-v18.17.0-linux-x64.tar.xz
-                        export PATH="$PWD/node-v18.17.0-linux-x64/bin:$PATH"
-                    '''
-                    
-                    sh 'node --version'
-                    sh 'npm --version'
-
-                    echo 'Iniciando aplicação Spring Boot...'
-                    dir("${PROJECT_DIR}") {
-                        sh 'nohup ${MAVEN_CMD} spring-boot:run > app.log 2>&1 &'
-                        echo "Aplicação iniciada"
-                    }
-                    
-                    echo 'Aguardando aplicação subir...'
-                    sleep(time: 30, unit: 'SECONDS')
-                    
-                    echo 'Verificando saúde da aplicação...'
-                    sh 'curl -s http://localhost:8080/actuator/health || echo "Aguardando aplicação..."'
-            
-                    echo 'Instalando Newman...'
-                    sh 'npm install -g newman'
-                    
-                    echo 'Executando testes API com Newman...'
-                    sh 'newman run apibluebank/postman/bluebank-collection.json --reporters cli,junit --reporter-junit-export apibluebank/postman/newman-report.xml'
-            
-                    echo 'Parando aplicação...'
-                    sh 'pkill -f "spring-boot:run" || true'
-                }
-            }
-            post {
-                always {
-                    junit 'apibluebank/postman/newman-report.xml'
-                }
-            }
-        }
-                stage('API Tests') {
-            steps {
-                script {
                     sh '''
                         curl -L -o node-v18.17.0-linux-x64.tar.xz https://nodejs.org/dist/v18.17.0/node-v18.17.0-linux-x64.tar.xz
                         tar -xf node-v18.17.0-linux-x64.tar.xz

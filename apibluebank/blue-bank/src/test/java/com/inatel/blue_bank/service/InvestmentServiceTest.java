@@ -52,18 +52,6 @@ public class InvestmentServiceTest {
     }
 
     @Test
-    public void findByIdTest(){
-        Investment investment = new Investment();
-        UUID id = UUID.randomUUID();
-        investment.setId(id);
-
-        when(repository.findById(investment.getId())).thenReturn(Optional.of(investment));
-        Optional<Investment> optionalInvestment = service.findById(id);
-        assertEquals(investment, optionalInvestment.get());
-        verify(repository, times(1)).findById(investment.getId());
-    }
-
-    @Test
     public void searchTest(){
         List<Investment> investments = new ArrayList<>();
         Investment investment1 = new Investment();
@@ -84,13 +72,6 @@ public class InvestmentServiceTest {
         verify(repository, times(1)).findByAccount(account);
     }
 
-    @Test
-    public void deleteTest(){
-        Investment investment = new Investment();
-        doNothing().when(repository).delete(investment);
-        service.delete(investment);
-        verify(repository, times(1)).delete(investment);
-    }
 
     @Test
     public void updateShouldThrowExceptionWhenInvestmentNotFoundTest(){

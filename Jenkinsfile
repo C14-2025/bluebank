@@ -1,13 +1,9 @@
-// Jenkinsfile (na raiz do repositório)
 pipeline {
     agent any
 
     environment {
         MAVEN_CMD = './mvnw'
-        APP_PORT = '8080'
-        BASE_URL = "http://localhost:${APP_PORT}"
         PROJECT_DIR = 'apibluebank/blue-bank'
-        POSTMAN_DIR = 'apibluebank/postman'
     }
 
     stages {
@@ -57,13 +53,6 @@ pipeline {
     post {
         always {
             echo 'Finalizando pipeline...'
-            sh '''
-                if [ -f ${PROJECT_DIR}/spring-boot.pid ]; then
-                    kill $(cat ${PROJECT_DIR}/spring-boot.pid) || true
-                    rm -f ${PROJECT_DIR}/spring-boot.pid
-                fi
-                lsof -ti:${APP_PORT} | xargs kill -9 || true
-            '''
             cleanWs()
         }
         success {

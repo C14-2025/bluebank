@@ -36,15 +36,6 @@ pipeline {
                 }
             }
         }
-        stage('Quality Checks') {
-            steps {
-                echo '📊 Verificando qualidade do código...'
-                dir("${PROJECT_DIR}") {
-                    sh "${MVNW_CMD} checkstyle:check || true"
-                    sh "${MVNW_CMD} spotbugs:check || true"
-                }
-            }
-        }
         stage('Package') {
             steps {
                 echo '📦 Gerando pacote...'
@@ -55,6 +46,19 @@ pipeline {
             post {
                 success {
                     archiveArtifacts artifacts: 'apibluebank/blue-bank/target/*.jar', fingerprint: true, allowEmptyArchive: false
+                }
+            }
+        }
+        stage('Verificação de Segurança') {
+            when {
+                expression { currentBuild.resultIsBetterOrEqualTo('SUCCESS') }
+            }
+            steps {
+                echo '🔒 Verificando dependências...'
+                dir("${PROJECT_DIR}") {
+                    // Verifica vulnerabilidades nas dependências
+                    sh "${MVNW_CMD} dependency-check:check || true"
+                    sh "${MVNW_CMD} versions:display-dependency-updates || true"
                 }
             }
         }

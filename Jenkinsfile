@@ -26,27 +26,37 @@ pipeline {
         stage('API Tests') {
             steps {
                 script {
+                    echo 'Instalando Node.js e Newman...'
+                    
                     sh '''
-                        curl -fsSL https://deb.nodesource.com/setup_18.x | sudo -E bash -
-                        sudo apt-get install -y nodejs
+                        # Baixar Node.js diretamente
+                        wget https://nodejs.org/dist/v18.17.0/node-v18.17.0-linux-x64.tar.xz
+                        tar -xf node-v18.17.0-linux-x64.tar.xz
+                        export PATH="$PWD/node-v18.17.0-linux-x64/bin:$PATH"
                     '''
+                    
                     sh 'node --version'
                     sh 'npm --version'
 
+                    echo 'Iniciando aplicação Spring Boot...'
                     dir("${PROJECT_DIR}") {
                         sh 'nohup ${MAVEN_CMD} spring-boot:run > app.log 2>&1 &'
-                        echo "Aplicação iniciada em background"
+                        echo "Aplicação iniciada"
                     }
                     
+                    echo 'Aguardando aplicação subir...'
                     sleep(time: 30, unit: 'SECONDS')
                     
-                    sh 'curl -f http://localhost:8080/actuator/health || echo "Aplicação não respondeu"'
+                    echo 'Verificando saúde da aplicação...'
+                    sh 'curl -s http://localhost:8080/actuator/health || echo "Aguardando aplicação..."'
             
-                    dir("apibluebank/postman") {
-                        sh 'npm install -g newman'
-                        sh 'newman run bluebank-collection.json --reporters cli,junit --reporter-junit-export newman-report.xml'
-                    }
+                    echo 'Instalando Newman...'
+                    sh 'npm install -g newman'
+                    
+                    echo 'Executando testes API com Newman...'
+                    sh 'newman run apibluebank/postman/bluebank-collection.json --reporters cli,junit --reporter-junit-export apibluebank/postman/newman-report.xml'
             
+                    echo 'Parando aplicação...'
                     sh 'pkill -f "spring-boot:run" || true'
                 }
             }

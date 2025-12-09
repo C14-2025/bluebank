@@ -113,15 +113,17 @@ public class CustomerController implements GenericController {
             return ResponseEntity.notFound().build();
         }
 
+        Customer cToUpdate = customerMapper.toEntity(dto);
+
         Customer customer = customerOptional.get();
-        customer.setFullName(dto.fullName());
-        customer.setDob(dto.dob());
-        customer.setNationality(dto.nationality());
-        customer.setPhone(dto.phone());
-        customer.setEmail(dto.email());
-        customer.setOccupation(dto.occupation());
-        customer.setDocType(dto.docType());
-        customer.setDocNumber(dto.docNumber());
+        customer.setFullName(cToUpdate.getFullName());
+        customer.setDob(cToUpdate.getDob());
+        customer.setNationality(cToUpdate.getNationality());
+        customer.setPhone(cToUpdate.getPhone());
+        customer.setEmail(cToUpdate.getEmail());
+        customer.setOccupation(cToUpdate.getOccupation());
+        customer.setDocType(cToUpdate.getDocType());
+        customer.setDocNumber(cToUpdate.getDocNumber());
 
         customerService.update(customer);
 

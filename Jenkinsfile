@@ -63,14 +63,16 @@ pipeline {
                             -Dspring-boot.run.profiles=test \
                             -Dserver.port=0 > app.log 2>&1 &
                         APP_PID=$!
-                        for i in {1..60}; do
+                        for i in {1..90}; do
                             if grep -q "Tomcat started on port" app.log; then
                                 break
                             fi
                             sleep 1
                         done
-                        SERVER_PORT=$(grep -i 'Tomcat started on port' app.log | \
-                            tail -1 | grep -o '[0-9]\\+' | tail -1)
+                        SERVER_PORT=$(grep -E "Tomcat started on port" app.log | \
+                            tail -1 | \
+                            grep -o '[0-9]\\+' | \
+                            tail -1)
 
                         if [ -z "$SERVER_PORT" ]; then
                             echo "Could not detect the port! Dumping log:"

@@ -3,7 +3,7 @@ pipeline {
 
     tools {
         jdk 'JDK21'
-        nodejs 'Node18'
+        nodejs 'Node20'
     }
     environment {
         MAVEN_CMD = './mvnw'

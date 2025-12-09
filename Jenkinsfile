@@ -57,10 +57,20 @@ pipeline {
                 script {
                     dir("${PROJECT_DIR}") {
                         sh '''
-                        npm install -g newman
-                        ${MAVEN_CMD} spring-boot:run -Dspring.profiles.active=test &
+                        npm install -g newman newman-reporter-html
+                        ${MAVEN_CMD} spring-boot:run -Dspring-boot.run.profiles=test &
                         APP_PID=$!
                         sleep 30
+                        for i in {1..6}; do
+                            curl -f -s http://localhost:8080/actuator/health > /dev/null && break
+                            echo "App not ready yet, retrying in 5s..."
+                            sleep 5
+                        done
+                        if ! curl -f -s http://localhost:8080/actuator/health > /dev/null; then
+                            echo "App failed to start!"
+                            kill $APP_PID || true
+                            exit 1
+                        fi
                         newman run ../postman/bluebank-collection.json -r cli,html --reporter-html-export target/newman-report.html
                         kill $APP_PID || true
                         '''

@@ -26,6 +26,13 @@ pipeline {
         stage('API Tests') {
             steps {
                 dir("${PROJECT_DIR}") {
+                    sh '''
+                        curl -fsSL https://deb.nodesource.com/setup_18.x | bash -
+                        apt-get install -y nodejs
+                    '''
+                    sh 'node --version'
+                    sh 'npm --version'
+
                     sh 'nohup ${MAVEN_CMD} spring-boot:run &'
                     sleep(time: 30, unit: 'SECONDS')
             

@@ -52,31 +52,6 @@ pipeline {
                 }
             }
         }
-        stage('Debug Environment') {
-            steps {
-                sh '''
-                    echo "=== DEBUG INFO ==="
-                    echo "Java Version:"
-                    java -version 2>&1
-                    echo ""
-                    echo "Maven Version:"
-                    mvn -v 2>&1 | head -1
-                    echo ""
-                    echo "Node Version:"
-                    node --version 2>&1 || echo "Node not found"
-                    echo ""
-                    echo "Current Directory:"
-                    pwd
-                    echo ""
-                    echo "Directory Contents:"
-                    ls -la
-                    echo ""
-                    echo "PostgreSQL Status:"
-                    pg_isready -h localhost -p 5432 2>&1 || echo "PostgreSQL not accessible"
-                    echo "=== END DEBUG ==="
-                '''
-            }
-        }
 
         stage('API Tests') {
             steps {
@@ -86,47 +61,81 @@ pipeline {
                             echo "=== INSTALANDO NEWMAN ==="
                             npm install -g newman newman-reporter-html
                             
-                            echo "=== INICIANDO SPRING BOOT COM H2 ==="
+                            echo "=== MATANDO PROCESSOS CONFLITANTES ==="
+                            # Matar qualquer aplicação Spring Boot rodando
+                            pkill -f "spring-boot:run" 2>/dev/null || true
+                            pkill -f "java.*bluebank" 2>/dev/null || true
+                            sleep 3
                             
-                            # Usar H2 em memória para evitar problemas com PostgreSQL
-                            ${MAVEN_CMD} spring-boot:run \
-                                -Dserver.port=8081 \
-                                -Dspring.datasource.url=jdbc:h2:mem:bluebanktest;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE \
+                            echo "=== VERIFICANDO PORTAS ==="
+                            # Liberar portas 8080 e 8081
+                            fuser -k 8080/tcp 2>/dev/null || true
+                            fuser -k 8081/tcp 2>/dev/null || true
+                            
+                            echo "=== INICIANDO APLICAÇÃO COM PERFIL TEST ==="
+                            
+                            # Iniciar aplicação com perfil 'test' que usa H2
+                            ./mvnw spring-boot:run \
+                                -Dspring-boot.run.profiles=test \
+                                -Dspring.datasource.url=jdbc:h2:mem:testdb;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE \
                                 -Dspring.datasource.driver-class-name=org.h2.Driver \
                                 -Dspring.datasource.username=sa \
                                 -Dspring.datasource.password= \
                                 -Dspring.jpa.database-platform=org.hibernate.dialect.H2Dialect \
                                 -Dspring.jpa.hibernate.ddl-auto=update \
                                 -Dspring.h2.console.enabled=true \
-                                > app.log 2>&1 &
+                                -Dserver.port=8081 \
+                                > app-test.log 2>&1 &
                             
                             APP_PID=$!
                             echo "PID: $APP_PID"
                             
-                            # Aguardar startup com verificação mais simples
-                            echo "=== AGUARDANDO STARTUP ==="
-                            sleep 20
+                            echo "=== AGUARDANDO STARTUP (40 segundos) ==="
+                            # Aguardar com verificações progressivas
+                            for i in {1..20}; do
+                                if curl -s http://localhost:8081/actuator/health 2>/dev/null | grep -q "UP"; then
+                                    echo "✅ Aplicação rodando na porta 8081!"
+                                    break
+                                fi
+                                
+                                # Verificar se processo ainda está vivo
+                                if ! kill -0 $APP_PID 2>/dev/null; then
+                                    echo "❌ Processo morreu. Verificando logs..."
+                                    tail -100 app-test.log
+                                    exit 1
+                                fi
+                                
+                                echo "⏳ Aguardando... ($i/20)"
+                                sleep 2
+                            done
                             
-                            # Verificar se app está rodando
-                            if curl -s http://localhost:8081/actuator/health 2>/dev/null | grep -q "UP"; then
-                                echo "✅ Aplicação está rodando!"
-                                
-                                echo "=== EXECUTANDO TESTES NEWMAN ==="
-                                newman run ../postman/bluebank-collection.json \
-                                    --env-var "baseUrl=http://localhost:8081" \
-                                    -r cli,html \
-                                    --reporter-html-export target/newman-report.html \
-                                    --reporter-html-title "BlueBank API Tests" \
-                                    --suppress-exit-code
-                                
-                                echo "=== TESTES COMPLETOS ==="
-                            else
-                                echo "❌ Aplicação não está respondendo"
-                                echo "=== LOG ==="
-                                tail -100 app.log
+                            # Verificação final
+                            if ! curl -s http://localhost:8081/actuator/health 2>/dev/null | grep -q "UP"; then
+                                echo "❌ Falha ao iniciar aplicação"
+                                echo "=== LOGS ==="
+                                tail -200 app-test.log
+                                exit 1
                             fi
                             
-                            # Parar aplicação
+                            echo "=== EXECUTANDO TESTES NEWMAN ==="
+                            # Verificar se arquivo existe
+                            if [ ! -f ../postman/bluebank-collection.json ]; then
+                                echo "ERRO: Arquivo de coleção não encontrado!"
+                                find .. -name "*.json" | head -10
+                                exit 1
+                            fi
+                            
+                            echo "Coleção encontrada. Executando testes..."
+                            newman run ../postman/bluebank-collection.json \
+                                --env-var "baseUrl=http://localhost:8081" \
+                                -r cli,html \
+                                --reporter-html-export target/newman-report.html \
+                                --reporter-html-title "BlueBank API Tests - $(date)" \
+                                --delay-request 500 \
+                                --suppress-exit-code
+                            
+                            echo "=== TESTES COMPLETOS ==="
+                            
                             echo "=== PARANDO APLICAÇÃO ==="
                             kill $APP_PID 2>/dev/null || true
                             sleep 2
@@ -136,17 +145,21 @@ pipeline {
             }
             post {
                 always {
-                    archiveArtifacts artifacts: "${PROJECT_DIR}/target/newman-report.html", allowEmptyArchive: true
-                    archiveArtifacts artifacts: "${PROJECT_DIR}/app.log", allowEmptyArchive: true
-                    
-                    publishHTML([
-                        reportDir: "${PROJECT_DIR}/target",
-                        reportFiles: 'newman-report.html',
-                        reportName: 'API Test Results',
-                        alwaysLinkToLastBuild: true,
-                        allowMissing: true,
-                        keepAll: true
-                    ])
+                    script {
+                        // Arquivos para análise
+                        archiveArtifacts artifacts: "${PROJECT_DIR}/target/newman-report.html", allowEmptyArchive: true
+                        archiveArtifacts artifacts: "${PROJECT_DIR}/app-test.log", allowEmptyArchive: true
+                        
+                        // Publicar relatório HTML
+                        publishHTML([
+                            reportDir: "${PROJECT_DIR}/target",
+                            reportFiles: 'newman-report.html',
+                            reportName: 'API Test Report',
+                            alwaysLinkToLastBuild: true,
+                            allowMissing: true,
+                            keepAll: true
+                        ])
+                    }
                 }
             }
         }

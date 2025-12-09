@@ -58,6 +58,7 @@ pipeline {
                     dir("${PROJECT_DIR}") {
                         sh '''
                         npm install -g newman newman-reporter-html
+                        rm -f app.log
                         ${MAVEN_CMD} spring-boot:run \
                             -Dspring-boot.run.profiles=test \
                             -Dserver.port=0 > app.log 2>&1 &
@@ -68,8 +69,15 @@ pipeline {
                             fi
                             sleep 1
                         done
-                        ERVER_PORT=$(grep -o 'Tomcat started on port.*([0-9]\\+)' app.log | tail -1 | grep -o '[0-9]\\+')
-                        [ -n "$SERVER_PORT" ] || (echo "Port not found" && kill $APP_PID && exit 1)
+                        SERVER_PORT=$(grep -o 'Tomcat started on port(s): [0-9]*' app.log | \
+                            tail -1 | grep -o '[0-9]*')
+
+                        if [ -z "$SERVER_PORT" ]; then
+                            echo "Could not detect the port! Dumping log:"
+                            cat app.log
+                            kill $APP_PID || true
+                            exit 1
+                        fi
                         newman run ../postman/bluebank-collection.json \
                             --env-var baseUrl=http://localhost:$SERVER_PORT \
                             -r cli,html --reporter-html-export target/newman-report.html

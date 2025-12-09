@@ -57,20 +57,11 @@ pipeline {
                 script {
                     dir("${PROJECT_DIR}") {
                         sh '''
-                        # Install newman (Postman CLI)
                         npm install -g newman
-
-                        # Start the app in background with test profile (uses H2 in-memory DB)
                         ${MAVEN_CMD} spring-boot:run -Dspring.profiles.active=test &
                         APP_PID=$!
-
-                        # Wait for the app to start (adjust sleep if needed)
                         sleep 30
-
-                        # Run Postman collection with newman (outputs to CLI and HTML report)
-                        newman run ../../postman/bluebank-collection.json -r cli,html --reporter-html-export target/newman-report.html
-
-                        # Kill the app process
+                        newman run ../postman/bluebank-collection.json -r cli,html --reporter-html-export target/newman-report.html
                         kill $APP_PID || true
                         '''
                     }

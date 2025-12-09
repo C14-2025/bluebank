@@ -89,7 +89,7 @@ pipeline {
             post {
                 always {
                     archiveArtifacts artifacts: "${PROJECT_DIR}/target/newman-report.html", allowEmptyArchive: true
-                    archiveArtifacts artifacts: "${PROJECT_DIR}/app.log", allowEmptyArchive: true  # For debugging
+                    archiveArtifacts artifacts: "${PROJECT_DIR}/app.log", allowEmptyArchive: true 
                 }
             }
         }
